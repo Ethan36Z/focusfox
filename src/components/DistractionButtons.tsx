@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { X } from 'lucide-react'
+import { Coffee, X } from 'lucide-react'
 import { DISTRACTION_REASONS } from '../types/focus'
 import { formatTime } from '../utils/time'
 
@@ -42,15 +42,15 @@ export function DistractionButtons({
       <button
         aria-controls="distraction-menu"
         aria-expanded={isOpen}
+        aria-label="Open distraction menu"
         className="distraction-menu-toggle"
         onClick={() => setIsOpen((current) => !current)}
+        title="Distractions"
         type="button"
       >
-        <span>Distractions</span>
+        <Coffee size={16} aria-hidden="true" />
         {activeReasonLabel ? (
-          <strong>
-            {activeReasonLabel} {formatTime(activeDurationSeconds)}
-          </strong>
+          <strong>{formatTime(activeDurationSeconds)}</strong>
         ) : null}
       </button>
 

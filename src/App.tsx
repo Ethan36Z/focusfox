@@ -53,14 +53,22 @@ function App() {
     totalSeconds === 0
       ? 0
       : Math.min(100, ((totalSeconds - remainingSeconds) / totalSeconds) * 100)
+  const activeDistractionDurationSeconds = activeDistractionEpisode
+    ? Math.max(
+        0,
+        totalSeconds -
+          remainingSeconds -
+          activeDistractionEpisode.startElapsedSeconds,
+      )
+    : 0
   const statusLabel =
     status === 'running'
-      ? 'Fox mode is on'
+      ? 'Focus'
       : status === 'paused'
-        ? 'Paused, still peaceful'
+        ? 'Paused'
         : status === 'completed'
-          ? 'Finished gently'
-          : 'Ready when you are'
+          ? 'Complete'
+          : 'Ready'
 
   return (
     <main className="app-shell">
@@ -77,18 +85,22 @@ function App() {
         </p>
       </section>
 
-      {completedSession ? (
-        <SessionComplete
-          session={completedSession}
-          onStartAnother={startAnotherSession}
-          onViewDetails={viewDetails}
-        />
-      ) : null}
-
       <div className="workspace-grid">
         <div className="focus-column">
-          <DurationSelector />
           <FocusPlayer
+            activeDistractionDurationSeconds={activeDistractionDurationSeconds}
+            activeDistractionLabel={
+              activeDistractionEpisode?.reasonLabel ?? null
+            }
+            completion={
+              completedSession ? (
+                <SessionComplete
+                  session={completedSession}
+                  onStartAnother={startAnotherSession}
+                  onViewDetails={viewDetails}
+                />
+              ) : null
+            }
             timer={
               <TimerDisplay
                 progressPercent={progressPercent}
@@ -96,18 +108,10 @@ function App() {
                 statusLabel={statusLabel}
               />
             }
+            duration={<DurationSelector />}
             distractions={
               <DistractionButtons
-                activeDurationSeconds={
-                  activeDistractionEpisode
-                    ? Math.max(
-                        0,
-                        totalSeconds -
-                          remainingSeconds -
-                          activeDistractionEpisode.startElapsedSeconds,
-                      )
-                    : 0
-                }
+                activeDurationSeconds={activeDistractionDurationSeconds}
                 activeReasonLabel={
                   activeDistractionEpisode?.reasonLabel ?? null
                 }

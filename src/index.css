@@ -33,6 +33,16 @@
   box-sizing: border-box;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 body {
   min-width: 320px;
   min-height: 100vh;
@@ -237,19 +247,17 @@ h2 {
 }
 
 .duration-panel {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 14px;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 14px;
-  border-color: rgba(255, 255, 255, 0.34);
-  background: rgba(255, 255, 255, 0.12);
+  display: grid;
+  gap: 11px;
+  padding: 0;
+  border: 0;
+  background: transparent;
   box-shadow: none;
+  backdrop-filter: none;
 }
 
 .duration-panel h2 {
-  font-size: 0.95rem;
+  font-size: 0.92rem;
 }
 
 .duration-options,
@@ -287,9 +295,9 @@ h2 {
 }
 
 .pill {
-  min-height: 38px;
-  padding: 0 15px;
-  font-size: 0.92rem;
+  min-height: 34px;
+  padding: 0 13px;
+  font-size: 0.84rem;
   font-weight: 800;
 }
 
@@ -312,7 +320,7 @@ h2 {
 
 .custom-duration input {
   width: 88px;
-  min-height: 38px;
+  min-height: 34px;
   padding: 0 12px;
   border: 1px solid rgba(94, 152, 143, 0.28);
   border-radius: 14px;
@@ -385,8 +393,8 @@ h2 {
   position: relative;
   overflow: hidden;
   display: grid;
-  gap: 14px;
-  min-height: 600px;
+  gap: 10px;
+  min-height: 590px;
   padding: 18px;
   border: 1px solid rgba(255, 255, 255, 0.46);
   border-radius: 30px;
@@ -400,22 +408,11 @@ h2 {
   backdrop-filter: blur(24px) saturate(1.08);
 }
 
-.focus-player-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 14px;
-  align-items: center;
-}
-
-.focus-player h2 {
-  font-size: 1rem;
-}
-
 .focus-player-stage {
   position: relative;
   overflow: hidden;
   display: grid;
-  min-height: 500px;
+  min-height: 530px;
   border-radius: 26px;
   background:
     linear-gradient(145deg, rgba(29, 67, 88, 0.24), rgba(255, 255, 255, 0.1)),
@@ -425,22 +422,46 @@ h2 {
     0 20px 50px rgba(67, 92, 122, 0.13);
 }
 
+.player-chrome {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 14px;
+  z-index: 5;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  pointer-events: none;
+}
+
+.player-chrome-actions {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  pointer-events: auto;
+}
+
+.player-chrome-button,
 .media-picker {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 38px;
-  padding: 0 15px;
+  width: 38px;
+  height: 38px;
   border-radius: 999px;
   color: #f7fffb;
-  font-size: 0.86rem;
+  font-size: 0.82rem;
   font-weight: 850;
   white-space: nowrap;
-  background: linear-gradient(135deg, rgba(10, 132, 255, 0.82), rgba(37, 154, 139, 0.78));
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.12)),
+    rgba(28, 64, 83, 0.2);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    0 12px 24px rgba(10, 132, 255, 0.14);
+    0 12px 24px rgba(21, 61, 84, 0.14);
+  backdrop-filter: blur(18px) saturate(1.08);
   cursor: pointer;
 }
 
@@ -454,9 +475,28 @@ h2 {
   white-space: nowrap;
 }
 
-.media-picker:focus-within {
+.media-picker:focus-within,
+.player-chrome-button:focus-visible {
   outline: 3px solid rgba(62, 138, 126, 0.32);
   outline-offset: 3px;
+}
+
+.duration-popover {
+  position: absolute;
+  top: 60px;
+  right: 106px;
+  z-index: 6;
+  width: min(320px, calc(100% - 28px));
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.48);
+  border-radius: 20px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.78), rgba(241, 250, 255, 0.5)),
+    rgba(255, 255, 255, 0.36);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.64),
+    0 18px 44px rgba(21, 61, 84, 0.16);
+  backdrop-filter: blur(24px) saturate(1.1);
 }
 
 .media-empty,
@@ -496,11 +536,11 @@ h2 {
   width: fit-content;
   max-width: min(520px, calc(100% - 28px));
   overflow: hidden;
-  padding: 7px 12px;
+  padding: 7px 11px;
   border-radius: 999px;
   margin: 0;
   color: rgba(247, 253, 255, 0.94);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 850;
   background: rgba(28, 64, 83, 0.22);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
@@ -508,6 +548,7 @@ h2 {
   text-overflow: ellipsis;
   white-space: nowrap;
   backdrop-filter: blur(14px);
+  pointer-events: auto;
 }
 
 .media-surface audio,
@@ -523,6 +564,15 @@ h2 {
   border-radius: inherit;
   background: rgba(24, 50, 67, 0.82);
   object-fit: cover;
+  transition:
+    filter 180ms ease,
+    transform 180ms ease;
+}
+
+.focus-player-stage.distraction-active .media-surface video,
+.focus-player-stage.distraction-active .audio-focus-surface {
+  filter: brightness(0.68) blur(1.5px);
+  transform: scale(1.01);
 }
 
 .audio-focus-surface {
@@ -562,44 +612,45 @@ h2 {
 
 .player-timer-layer {
   position: absolute;
-  left: 16px;
-  bottom: 56px;
+  left: 14px;
+  bottom: 54px;
   z-index: 3;
   display: grid;
-  width: min(230px, calc(100% - 32px));
+  width: min(210px, calc(100% - 28px));
   pointer-events: auto;
 }
 
 .focus-player .timer-card {
   width: 100%;
   min-height: auto;
-  padding: 10px 12px 11px;
-  border-radius: 18px;
+  padding: 9px 11px 10px;
+  border: 0;
+  border-radius: 16px;
   background:
-    linear-gradient(180deg, rgba(21, 61, 84, 0.3), rgba(255, 255, 255, 0.18)),
-    rgba(255, 255, 255, 0.2);
+    linear-gradient(180deg, rgba(22, 55, 73, 0.34), rgba(255, 255, 255, 0.16)),
+    rgba(19, 54, 74, 0.18);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.36),
-    0 18px 42px rgba(21, 61, 84, 0.18);
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 14px 30px rgba(21, 61, 84, 0.16);
   backdrop-filter: blur(24px) saturate(1.1);
 }
 
 .focus-player .timer-time {
-  margin: 0 0 8px;
-  font-size: clamp(2rem, 4.8vw, 3rem);
+  margin: 0 0 7px;
+  font-size: clamp(1.75rem, 4vw, 2.55rem);
 }
 
 .focus-player .timer-card .eyebrow,
 .focus-player .timer-card .progress-copy {
-  font-size: 0.68rem;
+  font-size: 0.64rem;
 }
 
 .focus-player .progress-track {
-  height: 4px;
+  height: 3px;
 }
 
 .focus-player .progress-copy {
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
 .player-control-layer {
@@ -625,12 +676,48 @@ h2 {
   font-weight: 700;
 }
 
-.player-distraction-corner {
+.active-distraction-overlay {
   position: absolute;
-  top: 14px;
-  right: 14px;
+  left: 50%;
+  top: 50%;
   z-index: 4;
-  width: min(280px, calc(100% - 28px));
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  min-width: 180px;
+  padding: 18px 22px;
+  border-radius: 24px;
+  color: rgba(248, 253, 255, 0.96);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.08)),
+    rgba(22, 55, 73, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 22px 54px rgba(21, 61, 84, 0.22);
+  text-shadow: 0 1px 12px rgba(21, 61, 84, 0.32);
+  transform: translate(-50%, -50%);
+  backdrop-filter: blur(24px) saturate(1.1);
+}
+
+.active-distraction-overlay span {
+  font-size: 0.84rem;
+  font-weight: 850;
+}
+
+.active-distraction-overlay strong {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.player-completion-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(236, 248, 255, 0.08);
+  backdrop-filter: blur(3px);
 }
 
 .timer-controls {
@@ -661,38 +748,43 @@ h2 {
 .distraction-panel {
   display: grid;
   justify-items: end;
+  width: 38px;
+}
+
+.distraction-panel.open {
+  width: min(280px, calc(100vw - 56px));
 }
 
 .distraction-menu-toggle {
   display: inline-flex;
-  gap: 7px;
+  gap: 5px;
   align-items: center;
   justify-content: center;
-  max-width: 100%;
-  min-height: 36px;
-  padding: 0 12px;
+  width: 38px;
+  height: 38px;
+  padding: 0;
   border-radius: 999px;
   color: #f7fffb;
   font-size: 0.8rem;
   font-weight: 850;
   background:
-    linear-gradient(135deg, rgba(10, 132, 255, 0.82), rgba(37, 154, 139, 0.78)),
-    rgba(255, 255, 255, 0.22);
+    linear-gradient(145deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.12)),
+    rgba(28, 64, 83, 0.2);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    0 14px 30px rgba(10, 132, 255, 0.16);
+    0 12px 24px rgba(21, 61, 84, 0.14);
   backdrop-filter: blur(18px) saturate(1.08);
 }
 
 .distraction-menu-toggle strong {
-  overflow: hidden;
-  max-width: 128px;
-  padding: 2px 7px;
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  padding: 1px 5px;
   border-radius: 999px;
   color: #285466;
-  font-size: 0.7rem;
-  background: rgba(255, 255, 255, 0.74);
-  text-overflow: ellipsis;
+  font-size: 0.62rem;
+  background: rgba(255, 255, 255, 0.82);
   white-space: nowrap;
 }
 
@@ -700,10 +792,10 @@ h2 {
   display: grid;
   gap: 10px;
   width: 100%;
-  padding: 12px;
+  padding: 11px;
   margin-top: 8px;
   border: 1px solid rgba(255, 255, 255, 0.46);
-  border-radius: 18px;
+  border-radius: 17px;
   background:
     linear-gradient(145deg, rgba(255, 255, 255, 0.76), rgba(241, 250, 255, 0.48)),
     rgba(255, 255, 255, 0.36);
@@ -711,6 +803,8 @@ h2 {
     inset 0 1px 0 rgba(255, 255, 255, 0.62),
     0 18px 44px rgba(21, 61, 84, 0.16);
   backdrop-filter: blur(24px) saturate(1.1);
+  transform-origin: top right;
+  animation: menu-pop 140ms ease-out;
 }
 
 .distraction-menu-body h2 {
@@ -722,10 +816,10 @@ h2 {
   justify-content: space-between;
   gap: 10px;
   align-items: center;
-  padding: 7px 9px;
+  padding: 6px 8px;
   border-radius: 14px;
   color: #2c6077;
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 850;
   background:
     linear-gradient(135deg, rgba(10, 132, 255, 0.14), rgba(52, 199, 89, 0.14)),
@@ -747,9 +841,9 @@ h2 {
 .reason-button {
   min-width: 0;
   width: 100%;
-  min-height: 32px;
-  padding: 0 10px;
-  font-size: 0.78rem;
+  min-height: 30px;
+  padding: 0 9px;
+  font-size: 0.74rem;
   font-weight: 800;
 }
 
@@ -810,8 +904,8 @@ h2 {
 
 .custom-reason-form input {
   min-width: 0;
-  min-height: 34px;
-  padding: 0 12px;
+  min-height: 32px;
+  padding: 0 10px;
   border: 1px solid rgba(94, 152, 143, 0.28);
   border-radius: 999px;
   color: #214842;
@@ -819,8 +913,20 @@ h2 {
 }
 
 .custom-reason-form .secondary-button {
-  min-height: 34px;
-  padding: 0 13px;
+  min-height: 32px;
+  padding: 0 12px;
+}
+
+@keyframes menu-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .completion-card {
@@ -835,9 +941,29 @@ h2 {
     #f8fdff;
 }
 
+.player-completion-overlay .completion-card {
+  width: min(560px, 100%);
+  gap: 12px;
+  margin-top: 0;
+  padding: 22px;
+  border-radius: 26px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.82), rgba(241, 250, 255, 0.56)),
+    rgba(255, 255, 255, 0.4);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.66),
+    0 24px 62px rgba(21, 61, 84, 0.22);
+  backdrop-filter: blur(26px) saturate(1.1);
+}
+
 .completion-card h2 {
   max-width: 580px;
   font-size: clamp(1.7rem, 4vw, 2.5rem);
+}
+
+.player-completion-overlay .completion-card h2 {
+  max-width: 420px;
+  font-size: clamp(1.35rem, 3vw, 1.85rem);
 }
 
 .completion-icon {
@@ -850,11 +976,20 @@ h2 {
   background: rgba(232, 245, 255, 0.92);
 }
 
+.player-completion-overlay .completion-icon {
+  width: 44px;
+  height: 44px;
+}
+
 .completion-facts {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
+}
+
+.player-completion-overlay .completion-facts {
+  gap: 8px;
 }
 
 .completion-facts span {
@@ -866,10 +1001,20 @@ h2 {
   background: rgba(255, 255, 255, 0.68);
 }
 
+.player-completion-overlay .completion-facts span {
+  min-width: 110px;
+  padding: 10px 12px;
+  font-size: 0.82rem;
+}
+
 .completion-facts strong {
   color: var(--fox-ink);
   font-size: 2rem;
   line-height: 1;
+}
+
+.player-completion-overlay .completion-facts strong {
+  font-size: 1.35rem;
 }
 
 .stats-panel {

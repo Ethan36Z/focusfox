@@ -1,20 +1,30 @@
 import { useEffect, useRef, useState } from 'react'
+import { Clock3, FolderOpen } from 'lucide-react'
 import type { ChangeEvent } from 'react'
 import type { ReactNode } from 'react'
 
 type MediaKind = 'audio' | 'video'
 
 interface FocusPlayerProps {
+  activeDistractionDurationSeconds: number
+  activeDistractionLabel: string | null
+  completion: ReactNode
   controls: ReactNode
   distractions: ReactNode
+  duration: ReactNode
   timer: ReactNode
 }
 
 export function FocusPlayer({
+  activeDistractionDurationSeconds,
+  activeDistractionLabel,
+  completion,
   controls,
   distractions,
+  duration,
   timer,
 }: FocusPlayerProps) {
+  const [isDurationOpen, setIsDurationOpen] = useState(false)
   const [mediaUrl, setMediaUrl] = useState<string | null>(null)
   const [mediaKind, setMediaKind] = useState<MediaKind | null>(null)
   const [fileName, setFileName] = useState('')
@@ -48,28 +58,19 @@ export function FocusPlayer({
 
   return (
     <section className="focus-player" aria-labelledby="focus-player-title">
-      <div className="focus-player-header">
-        <div>
-          <p className="eyebrow">Focus atmosphere</p>
-          <h2 id="focus-player-title">Local player</h2>
-        </div>
-        <label className="media-picker">
-          <input
-            type="file"
-            accept="audio/*,video/*"
-            onChange={handleFileChange}
-            aria-label="Choose a local audio or video file"
-          />
-          Choose file
-        </label>
-      </div>
+      <h2 className="visually-hidden" id="focus-player-title">
+        Local focus player
+      </h2>
 
-      <div className="focus-player-stage">
+      <div
+        className={
+          activeDistractionLabel
+            ? 'focus-player-stage distraction-active'
+            : 'focus-player-stage'
+        }
+      >
         {mediaUrl && mediaKind ? (
           <div className={`media-surface media-surface-${mediaKind}`}>
-            <p className="media-file-name" title={fileName}>
-              {fileName}
-            </p>
             {mediaKind === 'video' ? (
               <video
                 src={mediaUrl}
@@ -93,8 +94,62 @@ export function FocusPlayer({
           </div>
         )}
 
+        <div className="player-chrome">
+          <p className="media-file-name" title={fileName || 'No media selected'}>
+            {fileName || 'No local media selected'}
+          </p>
+          <div className="player-chrome-actions">
+            <button
+              aria-controls="duration-menu"
+              aria-expanded={isDurationOpen}
+              aria-label="Choose focus duration"
+              className="player-chrome-button"
+              onClick={() => setIsDurationOpen((current) => !current)}
+              type="button"
+            >
+              <Clock3 size={16} aria-hidden="true" />
+            </button>
+            <label
+              aria-label="Choose local audio or video file"
+              className="player-chrome-button media-picker"
+              title="Choose local media"
+            >
+              <input
+                type="file"
+                accept="audio/*,video/*"
+                onChange={handleFileChange}
+                aria-label="Choose a local audio or video file"
+              />
+              <FolderOpen size={16} aria-hidden="true" />
+            </label>
+            {distractions}
+          </div>
+        </div>
+
+        {isDurationOpen ? (
+          <div className="duration-popover" id="duration-menu">
+            {duration}
+          </div>
+        ) : null}
+
         <div className="player-timer-layer">{timer}</div>
-        <div className="player-distraction-corner">{distractions}</div>
+        {activeDistractionLabel ? (
+          <div className="active-distraction-overlay">
+            <span>{activeDistractionLabel}</span>
+            <strong>
+              {Math.floor(activeDistractionDurationSeconds / 60)
+                .toString()
+                .padStart(2, '0')}
+              :
+              {(activeDistractionDurationSeconds % 60)
+                .toString()
+                .padStart(2, '0')}
+            </strong>
+          </div>
+        ) : null}
+        {completion ? (
+          <div className="player-completion-overlay">{completion}</div>
+        ) : null}
       </div>
 
       <div className="player-control-layer">
