@@ -19,6 +19,13 @@ their attention away and review it after the session.
 - Details table
 - Session history
 - Reported focus percentage
+- Monthly analytics dashboard
+- Month selector
+- Monthly totals for sessions, focus time, and distracted time
+- Monthly average reported focus
+- Top distraction reason
+- Daily focus minutes chart
+- Ranked distraction reason summary
 - Local-first data storage with localStorage
 
 ## Tech Stack
@@ -45,7 +52,9 @@ npm run build
 2. Start a session.
 3. Click a distraction reason when attention is pulled away.
 4. Click the same reason again when returning to focus.
-5. Review the completion summary, timeline, chart, and history.
+5. Review the completion summary, individual session timeline, chart, and
+   history.
+6. Use Monthly Analytics to review longer-term focus patterns by month.
 
 ## Product Design Notes
 
@@ -55,6 +64,8 @@ npm run build
   browser with localStorage.
 - Reported focus percentage is based only on user-recorded distraction time, so
   it should be read as a reflection aid rather than a perfect measurement.
+- Monthly analytics helps users observe longer-term focus patterns without
+  leaving the local app.
 
 ## Current Status
 
@@ -68,10 +79,11 @@ Screenshots are planned at these paths:
 - `docs/screenshots/completion.png`
 - `docs/screenshots/stats-timeline.png`
 - `docs/screenshots/history.png`
+- `docs/screenshots/monthly-analytics.png`
 
 ## Future Roadmap
 
-- Monthly/yearly analytics
+- Yearly analytics
 - Multi-source lofi player
 - Local audio/video support
 - YouTube official embed support
