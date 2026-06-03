@@ -1,73 +1,80 @@
-# React + TypeScript + Vite
+# FocusFox
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A calm Pomodoro timer and distraction tracker for lofi focus sessions.
 
-Currently, two official plugins are available:
+## Problem Statement
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Many focus tools only measure time, but FocusFox helps users record what pulls
+their attention away and review it after the session.
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Custom focus duration
+- Start / pause / resume / reset
+- Custom distraction reasons
+- Timed distraction episodes
+- Completion-first session summary
+- Distraction duration chart
+- Multi-lane focus timeline
+- Details table
+- Session history
+- Reported focus percentage
+- Local-first data storage with localStorage
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- React
+- TypeScript
+- Vite
+- Zustand
+- Recharts
+- localStorage
+- CSS
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Local Setup
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## How to Use
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. Choose a focus duration.
+2. Start a session.
+3. Click a distraction reason when attention is pulled away.
+4. Click the same reason again when returning to focus.
+5. Review the completion summary, timeline, chart, and history.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Product Design Notes
+
+- Success-first completion: the app emphasizes finishing the focus session
+  before inviting the user into details.
+- Local-first privacy: completed sessions and custom reasons are stored in the
+  browser with localStorage.
+- Reported focus percentage is based only on user-recorded distraction time, so
+  it should be read as a reflection aid rather than a perfect measurement.
+
+## Current Status
+
+V1 is a local web app.
+
+## Screenshots
+
+Screenshots are planned at these paths:
+
+- `docs/screenshots/timer.png`
+- `docs/screenshots/completion.png`
+- `docs/screenshots/stats-timeline.png`
+- `docs/screenshots/history.png`
+
+## Future Roadmap
+
+- Monthly/yearly analytics
+- Multi-source lofi player
+- Local audio/video support
+- YouTube official embed support
+- Optional FreeTube/external player link support
+- Browser overlay extension for video and livestream sites
+- Optional theme/color controls
