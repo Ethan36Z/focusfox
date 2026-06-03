@@ -1,6 +1,7 @@
 import type { CompletedSession } from '../types/focus'
 
 const SESSIONS_KEY = 'focusfox.completedSessions'
+const CUSTOM_REASONS_KEY = 'focusfox.customReasons'
 const MAX_SESSIONS = 20
 
 export function loadCompletedSessions(): CompletedSession[] {
@@ -23,4 +24,25 @@ export function saveCompletedSessions(sessions: CompletedSession[]) {
     SESSIONS_KEY,
     JSON.stringify(sessions.slice(0, MAX_SESSIONS)),
   )
+}
+
+export function loadCustomReasons(): string[] {
+  try {
+    const raw = localStorage.getItem(CUSTOM_REASONS_KEY)
+
+    if (!raw) {
+      return []
+    }
+
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed)
+      ? parsed.filter((reason): reason is string => typeof reason === 'string')
+      : []
+  } catch {
+    return []
+  }
+}
+
+export function saveCustomReasons(reasons: string[]) {
+  localStorage.setItem(CUSTOM_REASONS_KEY, JSON.stringify(reasons))
 }

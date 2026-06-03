@@ -9,16 +9,25 @@ import {
 } from 'recharts'
 import type { CompletedSession } from '../types/focus'
 import { DISTRACTION_REASONS } from '../types/focus'
+import { getDistractionReasonLabel } from '../utils/reasons'
 
 interface SessionStatsProps {
   session: CompletedSession
 }
 
 export function SessionStats({ session }: SessionStatsProps) {
-  const chartData = DISTRACTION_REASONS.map((reason) => ({
+  const counts = new Map<string, number>(
+    DISTRACTION_REASONS.map((reason) => [reason, 0]),
+  )
+
+  session.distractions.forEach((event) => {
+    const reason = getDistractionReasonLabel(event)
+    counts.set(reason, (counts.get(reason) ?? 0) + 1)
+  })
+
+  const chartData = Array.from(counts, ([reason, count]) => ({
     reason,
-    count: session.distractions.filter((event) => event.reason === reason)
-      .length,
+    count,
   }))
 
   return (

@@ -8,9 +8,13 @@ export type DistractionReason =
   | 'Hungry'
   | 'Other'
 
+export type DistractionReasonLabel = string
+
 export interface DistractionEvent {
   id: string
-  reason: DistractionReason
+  reasonLabel: DistractionReasonLabel
+  reason?: DistractionReasonLabel
+  reasonId?: DistractionReasonLabel
   timestamp: string
   elapsedSeconds: number
 }

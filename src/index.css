@@ -297,8 +297,61 @@ h2 {
 
 .reason-button {
   min-width: 0;
+  width: 100%;
   padding: 0 14px;
   font-weight: 800;
+}
+
+.reason-chip {
+  position: relative;
+  min-width: 0;
+}
+
+.reason-chip .reason-button {
+  padding-right: 34px;
+}
+
+.reason-chip .reason-button:only-child {
+  padding-right: 14px;
+}
+
+.remove-reason-button {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  color: #5e7f78;
+  background: rgba(255, 255, 255, 0.7);
+  transform: translateY(-50%);
+}
+
+.remove-reason-button:hover:not(:disabled) {
+  transform: translateY(-50%) scale(1.04);
+}
+
+.custom-reason-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.custom-reason-form input {
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid rgba(94, 152, 143, 0.28);
+  border-radius: 999px;
+  color: #214842;
+  background: rgba(255, 255, 255, 0.76);
+}
+
+.custom-reason-form .secondary-button {
+  min-height: 44px;
 }
 
 .completion-card {
@@ -368,31 +421,42 @@ h2 {
 }
 
 .history-list li {
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.history-button {
   display: flex;
+  width: 100%;
   justify-content: space-between;
   gap: 16px;
   align-items: center;
   padding: 14px 16px;
-  border-radius: 18px;
+  border-radius: inherit;
   color: #57736e;
+  text-align: left;
   background: #effaf6;
 }
 
-.history-list div {
+.history-button div {
   display: grid;
 }
 
-.history-list strong {
+.history-button strong {
   color: #244842;
 }
 
-.history-list span {
+.history-button span {
   font-size: 0.9rem;
 }
 
 button:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: 0 12px 24px rgba(69, 119, 112, 0.18);
+}
+
+.remove-reason-button:hover:not(:disabled) {
+  transform: translateY(-50%) scale(1.04);
 }
 
 button:focus-visible,
@@ -463,7 +527,11 @@ input:focus-visible {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .history-list li {
+  .custom-reason-form {
+    grid-template-columns: 1fr;
+  }
+
+  .history-button {
     align-items: flex-start;
     flex-direction: column;
     gap: 6px;

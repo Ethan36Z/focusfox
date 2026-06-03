@@ -15,6 +15,7 @@ function App() {
   const remainingSeconds = useFocusStore((state) => state.remainingSeconds)
   const completedSession = useFocusStore((state) => state.completedSession)
   const completedSessions = useFocusStore((state) => state.completedSessions)
+  const customReasons = useFocusStore((state) => state.customReasons)
   const showDetails = useFocusStore((state) => state.showDetails)
   const startSession = useFocusStore((state) => state.startSession)
   const pauseSession = useFocusStore((state) => state.pauseSession)
@@ -22,6 +23,13 @@ function App() {
   const resetSession = useFocusStore((state) => state.resetSession)
   const tick = useFocusStore((state) => state.tick)
   const recordDistraction = useFocusStore((state) => state.recordDistraction)
+  const addCustomReason = useFocusStore((state) => state.addCustomReason)
+  const removeCustomReason = useFocusStore(
+    (state) => state.removeCustomReason,
+  )
+  const openCompletedSession = useFocusStore(
+    (state) => state.openCompletedSession,
+  )
   const viewDetails = useFocusStore((state) => state.viewDetails)
   const startAnotherSession = useFocusStore((state) => state.startAnotherSession)
 
@@ -90,10 +98,16 @@ function App() {
 
         <div className="side-column">
           <DistractionButtons
+            customReasons={customReasons}
             disabled={status !== 'running'}
+            onAddCustomReason={addCustomReason}
             onRecord={recordDistraction}
+            onRemoveCustomReason={removeCustomReason}
           />
-          <SessionHistory sessions={completedSessions} />
+          <SessionHistory
+            onOpenSession={openCompletedSession}
+            sessions={completedSessions}
+          />
         </div>
       </div>
 

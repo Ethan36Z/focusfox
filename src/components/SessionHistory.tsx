@@ -2,10 +2,11 @@ import type { CompletedSession } from '../types/focus'
 import { formatDateTime } from '../utils/time'
 
 interface SessionHistoryProps {
+  onOpenSession: (sessionId: string) => void
   sessions: CompletedSession[]
 }
 
-export function SessionHistory({ sessions }: SessionHistoryProps) {
+export function SessionHistory({ onOpenSession, sessions }: SessionHistoryProps) {
   return (
     <section className="panel history-panel" aria-labelledby="history-title">
       <div>
@@ -19,11 +20,17 @@ export function SessionHistory({ sessions }: SessionHistoryProps) {
         <ul className="history-list">
           {sessions.slice(0, 8).map((session) => (
             <li key={session.id}>
-              <div>
-                <strong>{session.durationMinutes} min</strong>
-                <span>{formatDateTime(session.completedAt)}</span>
-              </div>
-              <span>{session.distractions.length} distractions</span>
+              <button
+                className="history-button"
+                onClick={() => onOpenSession(session.id)}
+                type="button"
+              >
+                <div>
+                  <strong>{session.durationMinutes} min</strong>
+                  <span>{formatDateTime(session.completedAt)}</span>
+                </div>
+                <span>{session.distractions.length} distractions</span>
+              </button>
             </li>
           ))}
         </ul>

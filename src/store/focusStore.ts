@@ -1,11 +1,17 @@
 import { create } from 'zustand'
 import type {
   CompletedSession,
-  DistractionReason,
   DistractionEvent,
+  DistractionReasonLabel,
   FocusStatus,
 } from '../types/focus'
-import { loadCompletedSessions, saveCompletedSessions } from '../utils/storage'
+import { DISTRACTION_REASONS } from '../types/focus'
+import {
+  loadCompletedSessions,
+  loadCustomReasons,
+  saveCompletedSessions,
+  saveCustomReasons,
+} from '../utils/storage'
 import { minutesToSeconds } from '../utils/time'
 
 interface FocusState {
@@ -18,6 +24,7 @@ interface FocusState {
   distractions: DistractionEvent[]
   completedSession: CompletedSession | null
   completedSessions: CompletedSession[]
+  customReasons: string[]
   showDetails: boolean
   setDuration: (minutes: number) => void
   setCustomMinutes: (minutes: number) => void
@@ -26,12 +33,16 @@ interface FocusState {
   resumeSession: () => void
   resetSession: () => void
   tick: () => void
-  recordDistraction: (reason: DistractionReason) => void
+  recordDistraction: (reasonLabel: DistractionReasonLabel) => void
+  addCustomReason: (reasonLabel: string) => boolean
+  removeCustomReason: (reasonLabel: string) => void
+  openCompletedSession: (sessionId: string) => void
   viewDetails: () => void
   startAnotherSession: () => void
 }
 
 const DEFAULT_MINUTES = 25
+const MAX_REASON_LENGTH = 24
 
 function createId(prefix: string) {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
@@ -46,6 +57,17 @@ function persistCompletedSession(
   return nextSessions
 }
 
+function normalizeReasonLabel(reasonLabel: string) {
+  return reasonLabel.trim().slice(0, MAX_REASON_LENGTH)
+}
+
+function hasReasonLabel(reasonLabel: string, customReasons: string[]) {
+  const normalized = reasonLabel.toLocaleLowerCase()
+  return [...DISTRACTION_REASONS, ...customReasons].some(
+    (reason) => reason.toLocaleLowerCase() === normalized,
+  )
+}
+
 export const useFocusStore = create<FocusState>((set, get) => ({
   selectedMinutes: DEFAULT_MINUTES,
   customMinutes: DEFAULT_MINUTES,
@@ -56,6 +78,7 @@ export const useFocusStore = create<FocusState>((set, get) => ({
   distractions: [],
   completedSession: null,
   completedSessions: loadCompletedSessions(),
+  customReasons: loadCustomReasons(),
   showDetails: false,
 
   setDuration: (minutes) => {
@@ -166,7 +189,7 @@ export const useFocusStore = create<FocusState>((set, get) => ({
     })
   },
 
-  recordDistraction: (reason) => {
+  recordDistraction: (reasonLabel) => {
     const state = get()
 
     if (state.status !== 'running') {
@@ -175,12 +198,53 @@ export const useFocusStore = create<FocusState>((set, get) => ({
 
     const event: DistractionEvent = {
       id: createId('distraction'),
-      reason,
+      reasonLabel,
       timestamp: new Date().toISOString(),
       elapsedSeconds: state.totalSeconds - state.remainingSeconds,
     }
 
     set({ distractions: [...state.distractions, event] })
+  },
+
+  addCustomReason: (reasonLabel) => {
+    const label = normalizeReasonLabel(reasonLabel)
+
+    if (!label || hasReasonLabel(label, get().customReasons)) {
+      return false
+    }
+
+    const customReasons = [...get().customReasons, label]
+    saveCustomReasons(customReasons)
+    set({ customReasons })
+    return true
+  },
+
+  removeCustomReason: (reasonLabel) => {
+    const customReasons = get().customReasons.filter(
+      (reason) =>
+        reason.toLocaleLowerCase() !== reasonLabel.trim().toLocaleLowerCase(),
+    )
+
+    saveCustomReasons(customReasons)
+    set({ customReasons })
+  },
+
+  openCompletedSession: (sessionId) => {
+    const completedSession = get().completedSessions.find(
+      (session) => session.id === sessionId,
+    )
+
+    if (completedSession) {
+      set({
+        completedSession,
+        showDetails: true,
+        status: 'completed',
+        totalSeconds: completedSession.totalSeconds,
+        remainingSeconds: 0,
+        distractions: completedSession.distractions,
+        startedAt: completedSession.startedAt,
+      })
+    }
   },
 
   viewDetails: () => set({ showDetails: true }),
