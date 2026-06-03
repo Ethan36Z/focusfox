@@ -6,10 +6,15 @@ type MediaKind = 'audio' | 'video'
 
 interface FocusPlayerProps {
   controls: ReactNode
+  distractions: ReactNode
   timer: ReactNode
 }
 
-export function FocusPlayer({ controls, timer }: FocusPlayerProps) {
+export function FocusPlayer({
+  controls,
+  distractions,
+  timer,
+}: FocusPlayerProps) {
   const [mediaUrl, setMediaUrl] = useState<string | null>(null)
   const [mediaKind, setMediaKind] = useState<MediaKind | null>(null)
   const [fileName, setFileName] = useState('')
@@ -89,6 +94,7 @@ export function FocusPlayer({ controls, timer }: FocusPlayerProps) {
         )}
 
         <div className="player-timer-layer">{timer}</div>
+        <div className="player-distraction-corner">{distractions}</div>
       </div>
 
       <div className="player-control-layer">

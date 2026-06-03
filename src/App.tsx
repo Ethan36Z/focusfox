@@ -96,6 +96,28 @@ function App() {
                 statusLabel={statusLabel}
               />
             }
+            distractions={
+              <DistractionButtons
+                activeDurationSeconds={
+                  activeDistractionEpisode
+                    ? Math.max(
+                        0,
+                        totalSeconds -
+                          remainingSeconds -
+                          activeDistractionEpisode.startElapsedSeconds,
+                      )
+                    : 0
+                }
+                activeReasonLabel={
+                  activeDistractionEpisode?.reasonLabel ?? null
+                }
+                customReasons={customReasons}
+                disabled={status !== 'running'}
+                onAddCustomReason={addCustomReason}
+                onRecord={recordDistraction}
+                onRemoveCustomReason={removeCustomReason}
+              />
+            }
             controls={
               <TimerControls
                 status={status}
@@ -109,24 +131,6 @@ function App() {
         </div>
 
         <div className="side-column">
-          <DistractionButtons
-            activeDurationSeconds={
-              activeDistractionEpisode
-                ? Math.max(
-                    0,
-                    totalSeconds -
-                      remainingSeconds -
-                      activeDistractionEpisode.startElapsedSeconds,
-                  )
-                : 0
-            }
-            activeReasonLabel={activeDistractionEpisode?.reasonLabel ?? null}
-            customReasons={customReasons}
-            disabled={status !== 'running'}
-            onAddCustomReason={addCustomReason}
-            onRecord={recordDistraction}
-            onRemoveCustomReason={removeCustomReason}
-          />
           <SessionHistory
             onClearHistory={clearHistory}
             onOpenSession={openCompletedSession}

@@ -23,6 +23,7 @@ export function DistractionButtons({
   onRemoveCustomReason,
 }: DistractionButtonsProps) {
   const [customReason, setCustomReason] = useState('')
+  const [isOpen, setIsOpen] = useState(false)
   const allReasons = [...DISTRACTION_REASONS, ...customReasons]
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -34,67 +35,92 @@ export function DistractionButtons({
   }
 
   return (
-    <section className="panel distraction-panel" aria-labelledby="distraction-title">
-      <div>
-        <p className="eyebrow">Gentle check-in</p>
-        <h2 id="distraction-title">Notice a distraction</h2>
-      </div>
-      <div className="reason-grid">
-        {allReasons.map((reason) => {
-          const isCustom = customReasons.includes(reason)
+    <section
+      className={isOpen ? 'distraction-panel open' : 'distraction-panel'}
+      aria-label="Distraction controls"
+    >
+      <button
+        aria-controls="distraction-menu"
+        aria-expanded={isOpen}
+        className="distraction-menu-toggle"
+        onClick={() => setIsOpen((current) => !current)}
+        type="button"
+      >
+        <span>Distractions</span>
+        {activeReasonLabel ? (
+          <strong>
+            {activeReasonLabel} {formatTime(activeDurationSeconds)}
+          </strong>
+        ) : null}
+      </button>
 
-          return (
-            <div className="reason-chip" key={reason}>
-              <button
-                className={
-                  activeReasonLabel === reason
-                    ? 'reason-button active'
-                    : 'reason-button'
-                }
-                disabled={disabled}
-                onClick={() => onRecord(reason)}
-                type="button"
-              >
-                <span>{reason}</span>
-                {activeReasonLabel === reason ? (
-                  <span className="reason-timer">
-                    {formatTime(activeDurationSeconds)}
-                  </span>
-                ) : null}
-              </button>
-              {isCustom ? (
-                <button
-                  aria-label={`Remove ${reason}`}
-                  className="remove-reason-button"
-                  onClick={() => onRemoveCustomReason(reason)}
-                  type="button"
-                >
-                  <X size={14} aria-hidden="true" />
-                </button>
-              ) : null}
+      {isOpen ? (
+        <div className="distraction-menu-body" id="distraction-menu">
+          <div>
+            <p className="eyebrow">Gentle check-in</p>
+            <h2 id="distraction-title">Notice a distraction</h2>
+          </div>
+
+          {activeReasonLabel ? (
+            <div className="active-distraction-hud">
+              <span>{activeReasonLabel}</span>
+              <strong>{formatTime(activeDurationSeconds)}</strong>
             </div>
-          )
-        })}
-      </div>
+          ) : null}
 
-      <form className="custom-reason-form" onSubmit={handleSubmit}>
-        <input
-          maxLength={24}
-          onChange={(event) => setCustomReason(event.target.value)}
-          placeholder="Add custom reason"
-          type="text"
-          value={customReason}
-        />
-        <button className="secondary-button" type="submit">
-          Add
-        </button>
-      </form>
+          <div className="reason-grid">
+            {allReasons.map((reason) => {
+              const isCustom = customReasons.includes(reason)
 
-      <p className="helper-copy">
-        {disabled
-          ? 'Start a focus session to record distraction episodes.'
-          : 'Click a reason to start an episode. Click it again to stop.'}
-      </p>
+              return (
+                <div className="reason-chip" key={reason}>
+                  <button
+                    className={
+                      activeReasonLabel === reason
+                        ? 'reason-button active'
+                        : 'reason-button'
+                    }
+                    disabled={disabled}
+                    onClick={() => onRecord(reason)}
+                    type="button"
+                  >
+                    <span>{reason}</span>
+                  </button>
+                  {isCustom ? (
+                    <button
+                      aria-label={`Remove ${reason}`}
+                      className="remove-reason-button"
+                      onClick={() => onRemoveCustomReason(reason)}
+                      type="button"
+                    >
+                      <X size={14} aria-hidden="true" />
+                    </button>
+                  ) : null}
+                </div>
+              )
+            })}
+          </div>
+
+          <form className="custom-reason-form" onSubmit={handleSubmit}>
+            <input
+              maxLength={24}
+              onChange={(event) => setCustomReason(event.target.value)}
+              placeholder="Add custom reason"
+              type="text"
+              value={customReason}
+            />
+            <button className="secondary-button" type="submit">
+              Add
+            </button>
+          </form>
+
+          <p className="helper-copy">
+            {disabled
+              ? 'Start a focus session to record distraction episodes.'
+              : 'Click a reason to start an episode. Click it again to stop.'}
+          </p>
+        </div>
+      ) : null}
     </section>
   )
 }
