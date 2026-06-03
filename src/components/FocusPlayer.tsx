@@ -164,8 +164,8 @@ export function FocusPlayer({
             <div className="youtube-fallback">
               {embedFailed ? (
                 <p>
-                  This video may not allow embedded playback. Open it externally
-                  instead.
+                  This video may not allow embedded playback. Open it on
+                  YouTube instead.
                 </p>
               ) : null}
               {selectedYouTubeSource.url ? (
