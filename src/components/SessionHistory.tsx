@@ -1,5 +1,6 @@
 import type { CompletedSession } from '../types/focus'
-import { formatDateTime } from '../utils/time'
+import { getDistractionDurationSeconds } from '../utils/reasons'
+import { formatDateTime, formatTime } from '../utils/time'
 
 interface SessionHistoryProps {
   onOpenSession: (sessionId: string) => void
@@ -29,7 +30,17 @@ export function SessionHistory({ onOpenSession, sessions }: SessionHistoryProps)
                   <strong>{session.durationMinutes} min</strong>
                   <span>{formatDateTime(session.completedAt)}</span>
                 </div>
-                <span>{session.distractions.length} distractions</span>
+                <span>
+                  {session.distractions.length} episodes ·{' '}
+                  {formatTime(
+                    session.distractions.reduce(
+                      (total, distraction) =>
+                        total + getDistractionDurationSeconds(distraction),
+                      0,
+                    ),
+                  )}{' '}
+                  distracted
+                </span>
               </button>
             </li>
           ))}

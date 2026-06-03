@@ -33,11 +33,11 @@ export function SessionComplete({
         </span>
         <span>
           <strong>{session.distractions.length}</strong>
-          distractions noted
+          episodes
         </span>
         <span>
           <strong>{formatTime(totalDistractionSeconds)}</strong>
-          distraction time
+          distracted
         </span>
       </div>
       <div className="completion-actions">
