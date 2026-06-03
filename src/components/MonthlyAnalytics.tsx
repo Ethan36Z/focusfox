@@ -228,7 +228,7 @@ export function MonthlyAnalytics({ sessions }: MonthlyAnalyticsProps) {
                     />
                     <span className="reason-summary-name">{reason.reason}</span>
                     <span className="reason-summary-value">
-                      {formatTime(reason.durationSeconds)} · {reason.count}{' '}
+                      {formatTime(reason.durationSeconds)} - {reason.count}{' '}
                       episodes
                     </span>
                   </li>

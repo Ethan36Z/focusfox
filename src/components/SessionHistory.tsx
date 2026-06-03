@@ -98,7 +98,7 @@ export function SessionHistory({
                     <span>{formatDateTime(session.completedAt)}</span>
                   </div>
                   <span className="history-meta">
-                    {session.distractions.length} episodes ·{' '}
+                    {session.distractions.length} episodes -{' '}
                     {formatTime(distractedSeconds)} distracted
                   </span>
                   <span
