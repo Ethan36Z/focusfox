@@ -27,6 +27,11 @@ their attention away and review it after the session.
 - Daily focus minutes chart
 - Ranked distraction reason summary
 - Local audio/video focus player
+- Compact player chrome with timer HUD, duration menu, media picker, fullscreen,
+  and timer visibility controls
+- Active distraction overlay with a calm End action
+- Tabbed review panel for session review, history, monthly analytics, and focus
+  sources
 - Small focus source library for saved source metadata
 - YouTube official iframe embed for user-provided public links
 - Local-first data storage with localStorage
@@ -73,6 +78,11 @@ npm run build
   leaving the local app.
 - YouTube support uses official iframe embeds for user-provided links. Some
   videos may not allow embedded playback.
+- FocusFox does not download, cache, rip, proxy, or redistribute third-party
+  media.
+- FocusFox is not a video browsing app: there is no search, recommendation
+  feed, comments, playlist system, or entertainment browsing surface.
+- Media is atmosphere. Focus is the product.
 
 ## Product Docs
 

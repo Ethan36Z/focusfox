@@ -34,7 +34,8 @@ generic SaaS dashboard.
 - Focus session UI should be minimal.
 - Timer should be the visual anchor.
 - Distraction buttons should feel like soft tags or a hidden expandable menu.
-- Stats should stay hidden or secondary until the user asks to review.
+- Stats and history should stay secondary in a calm review panel until the user
+  asks to review.
 - Monthly analytics should feel like a calm report, not a business dashboard.
 - Timeline should feel like an attention track/audio track.
 
@@ -43,10 +44,10 @@ generic SaaS dashboard.
 - Frosted-glass player surface.
 - During playback, UI should stay almost empty.
 - Distraction menu can live behind a small corner button.
-- Selecting a reason can transition into a centered active distraction overlay.
+- Selecting a reason transitions into a centered active distraction overlay.
 - Video/background can darken or blur while a distraction episode is active.
-- Stats/review panel should be hidden by default and opened like a player
-  settings/effects drawer.
+- Stats/review content should remain visually secondary to the player and can
+  live in a compact panel or drawer.
 
 ## Typography
 
