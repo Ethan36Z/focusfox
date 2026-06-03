@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Coffee, Leaf } from 'lucide-react'
 import { DistractionButtons } from './components/DistractionButtons'
 import { DurationSelector } from './components/DurationSelector'
@@ -12,7 +12,10 @@ import { TimerControls } from './components/TimerControls'
 import { TimerDisplay } from './components/TimerDisplay'
 import { useFocusStore } from './store/focusStore'
 
+type ReviewTab = 'review' | 'history' | 'analytics' | 'sources'
+
 function App() {
+  const [reviewTab, setReviewTab] = useState<ReviewTab>('review')
   const status = useFocusStore((state) => state.status)
   const totalSeconds = useFocusStore((state) => state.totalSeconds)
   const remainingSeconds = useFocusStore((state) => state.remainingSeconds)
@@ -39,6 +42,13 @@ function App() {
   const clearHistory = useFocusStore((state) => state.clearHistory)
   const viewDetails = useFocusStore((state) => state.viewDetails)
   const startAnotherSession = useFocusStore((state) => state.startAnotherSession)
+
+  const reviewTabs: Array<{ id: ReviewTab; label: string }> = [
+    { id: 'review', label: 'Session Review' },
+    { id: 'history', label: 'History' },
+    { id: 'analytics', label: 'Monthly Analytics' },
+    { id: 'sources', label: 'Focus Sources' },
+  ]
 
   useEffect(() => {
     if (status !== 'running') {
@@ -71,6 +81,16 @@ function App() {
           ? 'Complete'
           : 'Ready'
 
+  function handleViewDetails() {
+    viewDetails()
+    setReviewTab('review')
+  }
+
+  function handleOpenSession(sessionId: string) {
+    openCompletedSession(sessionId)
+    setReviewTab('review')
+  }
+
   return (
     <main className="app-shell">
       <section className="hero-band" aria-labelledby="app-title">
@@ -98,7 +118,7 @@ function App() {
                 <SessionComplete
                   session={completedSession}
                   onStartAnother={startAnotherSession}
-                  onViewDetails={viewDetails}
+                  onViewDetails={handleViewDetails}
                 />
               ) : null
             }
@@ -143,20 +163,57 @@ function App() {
         </div>
       </div>
 
-      <FocusSourceLibrary />
+      <section className="review-shell" aria-labelledby="review-shell-title">
+        <div className="review-shell-heading">
+          <div>
+            <p className="eyebrow">After focus</p>
+            <h2 id="review-shell-title">Review panel</h2>
+          </div>
+          <div className="review-tabs" role="tablist" aria-label="Review views">
+            {reviewTabs.map((tab) => (
+              <button
+                aria-selected={reviewTab === tab.id}
+                className={
+                  reviewTab === tab.id ? 'review-tab active' : 'review-tab'
+                }
+                key={tab.id}
+                onClick={() => setReviewTab(tab.id)}
+                role="tab"
+                type="button"
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
 
-      {completedSession && showDetails ? (
-        <SessionStats session={completedSession} />
-      ) : null}
+        <div className="review-panel-body">
+          {reviewTab === 'review' ? (
+            completedSession && showDetails ? (
+              <SessionStats session={completedSession} />
+            ) : (
+              <div className="review-empty">
+                Complete a session or open one from history to review details.
+              </div>
+            )
+          ) : null}
 
-      <SessionHistory
-        onClearHistory={clearHistory}
-        onOpenSession={openCompletedSession}
-        selectedSessionId={completedSession?.id ?? null}
-        sessions={completedSessions}
-      />
+          {reviewTab === 'history' ? (
+            <SessionHistory
+              onClearHistory={clearHistory}
+              onOpenSession={handleOpenSession}
+              selectedSessionId={completedSession?.id ?? null}
+              sessions={completedSessions}
+            />
+          ) : null}
 
-      <MonthlyAnalytics sessions={completedSessions} />
+          {reviewTab === 'analytics' ? (
+            <MonthlyAnalytics sessions={completedSessions} />
+          ) : null}
+
+          {reviewTab === 'sources' ? <FocusSourceLibrary /> : null}
+        </div>
+      </section>
     </main>
   )
 }

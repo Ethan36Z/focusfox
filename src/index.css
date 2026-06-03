@@ -105,29 +105,19 @@ input:disabled {
 .hero-band {
   position: relative;
   overflow: hidden;
-  min-height: 210px;
-  padding: 36px 42px;
-  border: 1px solid var(--fox-glass-border);
-  border-radius: 34px;
+  min-height: 0;
+  padding: 18px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.56);
+  border-radius: 24px;
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.68), rgba(248, 253, 255, 0.34)),
-    radial-gradient(ellipse at 88% 18%, rgba(111, 183, 232, 0.12), transparent 34%),
-    rgba(255, 255, 255, 0.34);
-  box-shadow: 0 24px 72px rgba(73, 95, 119, 0.13);
-  backdrop-filter: blur(28px) saturate(1.08);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.64), rgba(248, 253, 255, 0.3)),
+    rgba(255, 255, 255, 0.28);
+  box-shadow: 0 14px 38px rgba(73, 95, 119, 0.08);
+  backdrop-filter: blur(22px) saturate(1.06);
 }
 
 .hero-band::after {
-  position: absolute;
-  right: 42px;
-  bottom: -18px;
-  width: 240px;
-  height: 160px;
-  border-radius: 48% 52% 0 0;
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.56), rgba(255, 255, 255, 0)),
-    rgba(111, 183, 232, 0.1);
-  content: "";
+  display: none;
 }
 
 .brand-mark {
@@ -135,9 +125,9 @@ input:disabled {
   gap: 8px;
   align-items: center;
   justify-content: center;
-  width: 74px;
-  height: 42px;
-  margin-bottom: 26px;
+  width: 56px;
+  height: 34px;
+  margin-bottom: 12px;
   border-radius: 999px;
   color: var(--fox-blue);
   background: rgba(255, 255, 255, 0.58);
@@ -161,10 +151,10 @@ p {
 
 h1 {
   max-width: 720px;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
   color: var(--fox-ink);
-  font-size: clamp(3.4rem, 11vw, 6.8rem);
-  line-height: 0.9;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1;
   letter-spacing: 0;
   text-shadow: 0 3px 0 rgba(255, 255, 255, 0.55);
 }
@@ -181,7 +171,7 @@ h2 {
   max-width: 520px;
   margin-bottom: 0;
   color: #425f70;
-  font-size: 1.08rem;
+  font-size: 0.98rem;
 }
 
 .workspace-grid {
@@ -1480,6 +1470,75 @@ h2 {
   margin-top: 22px;
 }
 
+.review-shell {
+  margin-top: 22px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.52);
+  border-radius: 28px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.56), rgba(248, 253, 255, 0.28)),
+    rgba(255, 255, 255, 0.24);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.58),
+    0 18px 48px rgba(73, 95, 119, 0.1);
+  backdrop-filter: blur(24px) saturate(1.06);
+}
+
+.review-shell-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+}
+
+.review-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.review-tab {
+  min-height: 34px;
+  padding: 0 13px;
+  border-radius: 999px;
+  color: #31596c;
+  font-size: 0.82rem;
+  font-weight: 850;
+  background: rgba(255, 255, 255, 0.48);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.44);
+}
+
+.review-tab.active {
+  color: #f7fffb;
+  background: linear-gradient(135deg, rgba(10, 132, 255, 0.82), rgba(37, 154, 139, 0.74));
+  box-shadow: 0 12px 24px rgba(10, 132, 255, 0.14);
+}
+
+.review-panel-body {
+  margin-top: 16px;
+}
+
+.review-panel-body > .panel,
+.review-panel-body > .stats-panel,
+.review-panel-body > .history-panel,
+.review-panel-body > .analytics-panel,
+.review-panel-body > .focus-source-library {
+  margin-top: 0;
+}
+
+.review-empty {
+  display: grid;
+  min-height: 120px;
+  place-items: center;
+  padding: 22px;
+  border-radius: 20px;
+  color: var(--fox-muted);
+  text-align: center;
+  background: rgba(248, 253, 255, 0.58);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.48);
+}
+
 .focus-source-library {
   display: grid;
   gap: 14px;
@@ -1723,8 +1782,8 @@ input:focus-visible {
   }
 
   .hero-band {
-    min-height: 220px;
-    padding: 30px 24px;
+    min-height: 0;
+    padding: 18px 20px;
     border-radius: 24px;
   }
 
@@ -1799,6 +1858,15 @@ input:focus-visible {
   .duration-panel {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .review-shell-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .review-tabs {
+    justify-content: flex-start;
   }
 
   .focus-player-stage {
