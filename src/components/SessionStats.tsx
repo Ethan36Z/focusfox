@@ -81,7 +81,7 @@ export function SessionStats({ session }: SessionStatsProps) {
       <div className="chart-wrap">
         {chartData.length === 0 ? (
           <p className="chart-empty">
-            No distraction time recorded for this session.
+            No distraction episodes recorded for this session. Nice steady block.
           </p>
         ) : (
           <ResponsiveContainer width="100%" height={260}>

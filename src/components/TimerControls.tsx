@@ -18,13 +18,14 @@ export function TimerControls({
 }: TimerControlsProps) {
   const isRunning = status === 'running'
   const isPaused = status === 'paused'
+  const startLabel = status === 'completed' ? 'Start new session' : 'Start'
 
   return (
     <div className="timer-controls" aria-label="Timer controls">
       {status === 'idle' || status === 'completed' ? (
         <button className="primary-button" onClick={onStart} type="button">
           <Play size={18} aria-hidden="true" />
-          Start
+          {startLabel}
         </button>
       ) : null}
 

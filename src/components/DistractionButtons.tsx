@@ -91,7 +91,9 @@ export function DistractionButtons({
       </form>
 
       <p className="helper-copy">
-        Only active focus sessions record details. Nothing here is a failure.
+        {disabled
+          ? 'Start a focus session to record distraction episodes.'
+          : 'Click a reason to start an episode. Click it again to stop.'}
       </p>
     </section>
   )

@@ -18,6 +18,17 @@ export function SessionComplete({
     (total, distraction) => total + getDistractionDurationSeconds(distraction),
     0,
   )
+  const focusRatio = Math.round(
+    Math.max(
+      0,
+      Math.min(
+        100,
+        ((session.totalSeconds - totalDistractionSeconds) /
+          Math.max(1, session.totalSeconds)) *
+          100,
+      ),
+    ),
+  )
 
   return (
     <section className="completion-card" aria-labelledby="complete-title">
@@ -38,6 +49,10 @@ export function SessionComplete({
         <span>
           <strong>{formatTime(totalDistractionSeconds)}</strong>
           distracted
+        </span>
+        <span title="Based on recorded distraction time.">
+          <strong>{focusRatio}%</strong>
+          reported focus
         </span>
       </div>
       <div className="completion-actions">
