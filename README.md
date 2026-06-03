@@ -106,17 +106,22 @@ V2A is a local-first web app with a focus player prototype.
 
 Screenshots are planned at these paths:
 
-- `docs/screenshots/timer.png`
-- `docs/screenshots/completion.png`
-- `docs/screenshots/stats-timeline.png`
-- `docs/screenshots/history.png`
+- `docs/screenshots/player-empty-or-local-video.png`
+- `docs/screenshots/youtube-embed-player.png`
+- `docs/screenshots/active-distraction-overlay.png`
+- `docs/screenshots/completion-modal.png`
+- `docs/screenshots/session-review-timeline.png`
 - `docs/screenshots/monthly-analytics.png`
+- `docs/screenshots/focus-source-library.png`
+- `docs/screenshots/pwa-installed-window.png`
 
 ## Future Roadmap
 
 - Yearly analytics
+- Export/import for local data
 - Broader multi-source lofi player controls
 - Bilibili embed/live support if safe
 - Optional FreeTube/external player link support
 - Browser overlay extension for video and livestream sites
 - Optional theme/color controls
+- Possible desktop/Tauri version
