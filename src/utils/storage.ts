@@ -26,6 +26,10 @@ export function saveCompletedSessions(sessions: CompletedSession[]) {
   )
 }
 
+export function clearCompletedSessions() {
+  localStorage.removeItem(SESSIONS_KEY)
+}
+
 export function loadCustomReasons(): string[] {
   try {
     const raw = localStorage.getItem(CUSTOM_REASONS_KEY)

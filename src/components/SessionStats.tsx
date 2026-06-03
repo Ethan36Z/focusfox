@@ -22,6 +22,7 @@ interface SessionStatsProps {
 }
 
 export function SessionStats({ session }: SessionStatsProps) {
+  const totalSeconds = Math.max(1, session.totalSeconds)
   const normalizedDistractions = session.distractions.map((distraction) => ({
     id: distraction.id,
     reason: getDistractionReasonLabel(distraction),
@@ -52,11 +53,14 @@ export function SessionStats({ session }: SessionStatsProps) {
     reason,
     count: data.count,
     durationSeconds: data.durationSeconds,
-    duration: formatTime(data.durationSeconds),
-  }))
+  })).filter((item) => item.durationSeconds > 0)
   const timelineDistractions = normalizedDistractions.filter(
     (distraction) => distraction.durationSeconds > 0,
   )
+  const timelineTicks = [0, 0.25, 0.5, 0.75, 1].map((position) => ({
+    position,
+    label: formatTime(totalSeconds * position),
+  }))
 
   return (
     <section className="panel stats-panel" aria-labelledby="stats-title">
@@ -66,73 +70,105 @@ export function SessionStats({ session }: SessionStatsProps) {
       </div>
 
       <div className="chart-wrap">
-        <ResponsiveContainer width="100%" height={260}>
-          <BarChart data={chartData} margin={{ top: 12, right: 12, left: -18, bottom: 0 }}>
-            <CartesianGrid stroke="#d7eee9" strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="reason" tickLine={false} axisLine={false} />
-            <YAxis allowDecimals={false} tickLine={false} axisLine={false} />
-            <Tooltip
-              cursor={{ fill: 'rgba(104, 174, 164, 0.12)' }}
-              formatter={(value, name, item) => {
-                if (name === 'durationSeconds') {
-                  return [
-                    `${formatTime(Number(value))} across ${item.payload.count} episodes`,
-                    'Duration',
-                  ]
-                }
+        {chartData.length === 0 ? (
+          <p className="chart-empty">
+            No distraction time recorded for this session.
+          </p>
+        ) : (
+          <ResponsiveContainer width="100%" height={260}>
+            <BarChart
+              data={chartData}
+              margin={{ top: 12, right: 12, left: -18, bottom: 0 }}
+            >
+              <CartesianGrid stroke="#d7eee9" strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="reason" tickLine={false} axisLine={false} />
+              <YAxis
+                allowDecimals={false}
+                tickFormatter={(value) => `${value}s`}
+                tickLine={false}
+                axisLine={false}
+              />
+              <Tooltip
+                cursor={{ fill: 'rgba(104, 174, 164, 0.12)' }}
+                formatter={(value, name, item) => {
+                  if (name === 'durationSeconds') {
+                    return [
+                      `${formatTime(Number(value))} across ${item.payload.count} episodes`,
+                      'Distraction time',
+                    ]
+                  }
 
-                return [value, name]
-              }}
-              contentStyle={{
-                border: '1px solid #cfe7df',
-                borderRadius: 14,
-                boxShadow: '0 14px 34px rgba(69, 104, 96, 0.16)',
-              }}
-            />
-            <Bar dataKey="durationSeconds" fill="#68aea4" radius={[10, 10, 4, 4]} />
-          </BarChart>
-        </ResponsiveContainer>
+                  return [value, name]
+                }}
+                contentStyle={{
+                  border: '1px solid #cfe7df',
+                  borderRadius: 14,
+                  boxShadow: '0 14px 34px rgba(69, 104, 96, 0.16)',
+                }}
+              />
+              <Bar dataKey="durationSeconds" fill="#68aea4" radius={[10, 10, 4, 4]} />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
       </div>
 
       <div className="timeline-section">
         <div className="timeline-heading">
           <h3>Focus timeline</h3>
           <span>
-            {formatTime(0)} - {formatTime(session.totalSeconds)}
+            {formatTime(0)} - {formatTime(totalSeconds)}
           </span>
         </div>
 
         <div className="focus-timeline" aria-label="Focus timeline">
+          {timelineTicks.map((tick) => (
+            <span
+              className="timeline-tick"
+              key={tick.position}
+              style={{ left: `${tick.position * 100}%` }}
+            />
+          ))}
           {timelineDistractions.length === 0 ? (
-            <p className="timeline-empty">No timed episodes for this session.</p>
+            <p className="timeline-empty">
+              No distraction episodes recorded for this session.
+            </p>
           ) : (
             timelineDistractions.map((distraction) => {
               const left = Math.min(
                 100,
-                Math.max(0, (distraction.startSeconds / session.totalSeconds) * 100),
+                Math.max(0, (distraction.startSeconds / totalSeconds) * 100),
               )
-              const width = Math.min(
-                100 - left,
-                Math.max(
-                  1.5,
-                  (distraction.durationSeconds / session.totalSeconds) * 100,
-                ),
-              )
+              const naturalWidth =
+                (distraction.durationSeconds / totalSeconds) * 100
+              const width = Math.min(100 - left, Math.max(1.25, naturalWidth))
+              const isMarker = naturalWidth < 3
 
               return (
                 <span
-                  className="timeline-segment"
+                  aria-label={`${distraction.reason}, ${formatTime(
+                    distraction.startSeconds,
+                  )} to ${formatTime(distraction.endSeconds)}`}
+                  className={
+                    isMarker
+                      ? 'timeline-segment timeline-marker'
+                      : 'timeline-segment'
+                  }
                   key={distraction.id}
                   style={{ left: `${left}%`, width: `${width}%` }}
                   title={`${distraction.reason}: ${formatTime(
                     distraction.startSeconds,
-                  )} - ${formatTime(distraction.endSeconds)}`}
-                >
-                  {distraction.reason}
-                </span>
+                  )} - ${formatTime(distraction.endSeconds)} (${formatTime(
+                    distraction.durationSeconds,
+                  )})`}
+                />
               )
             })
           )}
+        </div>
+        <div className="timeline-scale" aria-hidden="true">
+          {timelineTicks.map((tick) => (
+            <span key={tick.position}>{tick.label}</span>
+          ))}
         </div>
       </div>
 
@@ -149,7 +185,9 @@ export function SessionStats({ session }: SessionStatsProps) {
           <tbody>
             {normalizedDistractions.length === 0 ? (
               <tr>
-                <td colSpan={4}>No distraction episodes recorded.</td>
+                <td colSpan={4}>
+                  No distraction episodes recorded for this session.
+                </td>
               </tr>
             ) : (
               normalizedDistractions.map((distraction) => (

@@ -8,6 +8,7 @@ import type {
 } from '../types/focus'
 import { DISTRACTION_REASONS } from '../types/focus'
 import {
+  clearCompletedSessions,
   loadCompletedSessions,
   loadCustomReasons,
   saveCompletedSessions,
@@ -39,6 +40,7 @@ interface FocusState {
   addCustomReason: (reasonLabel: string) => boolean
   removeCustomReason: (reasonLabel: string) => void
   openCompletedSession: (sessionId: string) => void
+  clearHistory: () => void
   viewDetails: () => void
   startAnotherSession: () => void
 }
@@ -328,6 +330,15 @@ export const useFocusStore = create<FocusState>((set, get) => ({
         startedAt: completedSession.startedAt,
       })
     }
+  },
+
+  clearHistory: () => {
+    clearCompletedSessions()
+    set({
+      completedSessions: [],
+      completedSession: null,
+      showDetails: false,
+    })
   },
 
   viewDetails: () => set({ showDetails: true }),

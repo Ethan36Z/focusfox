@@ -33,6 +33,7 @@ function App() {
   const openCompletedSession = useFocusStore(
     (state) => state.openCompletedSession,
   )
+  const clearHistory = useFocusStore((state) => state.clearHistory)
   const viewDetails = useFocusStore((state) => state.viewDetails)
   const startAnotherSession = useFocusStore((state) => state.startAnotherSession)
 
@@ -119,7 +120,9 @@ function App() {
             onRemoveCustomReason={removeCustomReason}
           />
           <SessionHistory
+            onClearHistory={clearHistory}
             onOpenSession={openCompletedSession}
+            selectedSessionId={completedSession?.id ?? null}
             sessions={completedSessions}
           />
         </div>
