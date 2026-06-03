@@ -109,6 +109,13 @@ function App() {
               />
             }
             duration={<DurationSelector />}
+            onEndActiveDistraction={() => {
+              if (activeDistractionEpisode) {
+                recordDistraction(activeDistractionEpisode.reasonLabel)
+              }
+            }}
+            onStart={startSession}
+            status={status}
             distractions={
               <DistractionButtons
                 activeDurationSeconds={activeDistractionDurationSeconds}

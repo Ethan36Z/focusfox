@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Clock3, FolderOpen } from 'lucide-react'
 import type { ChangeEvent } from 'react'
 import type { ReactNode } from 'react'
+import type { FocusStatus } from '../types/focus'
 
 type MediaKind = 'audio' | 'video'
 
@@ -12,6 +13,9 @@ interface FocusPlayerProps {
   controls: ReactNode
   distractions: ReactNode
   duration: ReactNode
+  onEndActiveDistraction: () => void
+  onStart: () => void
+  status: FocusStatus
   timer: ReactNode
 }
 
@@ -22,6 +26,9 @@ export function FocusPlayer({
   controls,
   distractions,
   duration,
+  onEndActiveDistraction,
+  onStart,
+  status,
   timer,
 }: FocusPlayerProps) {
   const [isDurationOpen, setIsDurationOpen] = useState(false)
@@ -54,6 +61,11 @@ export function FocusPlayer({
     setMediaUrl(nextUrl)
     setMediaKind(file.type.startsWith('video/') ? 'video' : 'audio')
     setFileName(file.name)
+  }
+
+  const handleStartFromSetup = () => {
+    onStart()
+    setIsDurationOpen(false)
   }
 
   return (
@@ -129,6 +141,15 @@ export function FocusPlayer({
         {isDurationOpen ? (
           <div className="duration-popover" id="duration-menu">
             {duration}
+            {status === 'idle' || status === 'completed' ? (
+              <button
+                className="primary-button setup-start-button"
+                onClick={handleStartFromSetup}
+                type="button"
+              >
+                {status === 'completed' ? 'Start new session' : 'Start'}
+              </button>
+            ) : null}
           </div>
         ) : null}
 
@@ -145,6 +166,13 @@ export function FocusPlayer({
                 .toString()
                 .padStart(2, '0')}
             </strong>
+            <button
+              className="secondary-button active-distraction-end"
+              onClick={onEndActiveDistraction}
+              type="button"
+            >
+              End
+            </button>
           </div>
         ) : null}
         {completion ? (

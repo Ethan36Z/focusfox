@@ -499,6 +499,12 @@ h2 {
   backdrop-filter: blur(24px) saturate(1.1);
 }
 
+.setup-start-button {
+  width: 100%;
+  min-height: 38px;
+  margin-top: 12px;
+}
+
 .media-empty,
 .media-surface {
   position: absolute;
@@ -623,30 +629,33 @@ h2 {
 .focus-player .timer-card {
   width: 100%;
   min-height: auto;
-  padding: 9px 11px 10px;
+  padding: 0 0 0 2px;
   border: 0;
-  border-radius: 16px;
-  background:
-    linear-gradient(180deg, rgba(22, 55, 73, 0.34), rgba(255, 255, 255, 0.16)),
-    rgba(19, 54, 74, 0.18);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.28),
-    0 14px 30px rgba(21, 61, 84, 0.16);
-  backdrop-filter: blur(24px) saturate(1.1);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  text-align: left;
 }
 
 .focus-player .timer-time {
   margin: 0 0 7px;
-  font-size: clamp(1.75rem, 4vw, 2.55rem);
+  font-size: clamp(2.15rem, 5vw, 3.25rem);
+  text-align: left;
 }
 
 .focus-player .timer-card .eyebrow,
 .focus-player .timer-card .progress-copy {
-  font-size: 0.64rem;
+  color: rgba(248, 253, 255, 0.92);
+  font-size: 0.66rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  text-shadow: 0 1px 12px rgba(21, 61, 84, 0.46);
 }
 
 .focus-player .progress-track {
   height: 3px;
+  background: rgba(247, 255, 251, 0.28);
 }
 
 .focus-player .progress-copy {
@@ -709,6 +718,14 @@ h2 {
   line-height: 1;
 }
 
+.active-distraction-end {
+  min-height: 34px;
+  padding: 0 16px;
+  margin-top: 6px;
+  color: #285466;
+  background: rgba(255, 255, 255, 0.74);
+}
+
 .player-completion-overlay {
   position: absolute;
   inset: 0;
@@ -746,13 +763,14 @@ h2 {
 }
 
 .distraction-panel {
+  position: relative;
   display: grid;
   justify-items: end;
   width: 38px;
 }
 
 .distraction-panel.open {
-  width: min(280px, calc(100vw - 56px));
+  width: 38px;
 }
 
 .distraction-menu-toggle {
@@ -776,22 +794,26 @@ h2 {
   backdrop-filter: blur(18px) saturate(1.08);
 }
 
-.distraction-menu-toggle strong {
+.recording-dot {
   position: absolute;
-  right: -4px;
-  bottom: -4px;
-  padding: 1px 5px;
+  right: 6px;
+  bottom: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 999px;
-  color: #285466;
-  font-size: 0.62rem;
-  background: rgba(255, 255, 255, 0.82);
-  white-space: nowrap;
+  background: var(--fox-coral);
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.72),
+    0 0 12px rgba(255, 155, 141, 0.42);
 }
 
 .distraction-menu-body {
+  position: absolute;
+  top: 46px;
+  right: 0;
   display: grid;
   gap: 10px;
-  width: 100%;
+  width: min(280px, calc(100vw - 56px));
   padding: 11px;
   margin-top: 8px;
   border: 1px solid rgba(255, 255, 255, 0.46);
@@ -1586,7 +1608,7 @@ input:focus-visible {
   }
 
   .distraction-menu-toggle {
-    width: 100%;
+    width: 38px;
   }
 
   .reason-grid {

@@ -1,7 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Coffee, X } from 'lucide-react'
 import { DISTRACTION_REASONS } from '../types/focus'
-import { formatTime } from '../utils/time'
 
 interface DistractionButtonsProps {
   activeDurationSeconds: number
@@ -14,7 +13,6 @@ interface DistractionButtonsProps {
 }
 
 export function DistractionButtons({
-  activeDurationSeconds,
   activeReasonLabel,
   customReasons,
   disabled,
@@ -34,6 +32,11 @@ export function DistractionButtons({
     }
   }
 
+  function handleReasonClick(reason: string) {
+    onRecord(reason)
+    setIsOpen(false)
+  }
+
   return (
     <section
       className={isOpen ? 'distraction-panel open' : 'distraction-panel'}
@@ -49,9 +52,7 @@ export function DistractionButtons({
         type="button"
       >
         <Coffee size={16} aria-hidden="true" />
-        {activeReasonLabel ? (
-          <strong>{formatTime(activeDurationSeconds)}</strong>
-        ) : null}
+        {activeReasonLabel ? <span className="recording-dot" /> : null}
       </button>
 
       {isOpen ? (
@@ -60,13 +61,6 @@ export function DistractionButtons({
             <p className="eyebrow">Gentle check-in</p>
             <h2 id="distraction-title">Notice a distraction</h2>
           </div>
-
-          {activeReasonLabel ? (
-            <div className="active-distraction-hud">
-              <span>{activeReasonLabel}</span>
-              <strong>{formatTime(activeDurationSeconds)}</strong>
-            </div>
-          ) : null}
 
           <div className="reason-grid">
             {allReasons.map((reason) => {
@@ -81,7 +75,7 @@ export function DistractionButtons({
                         : 'reason-button'
                     }
                     disabled={disabled}
-                    onClick={() => onRecord(reason)}
+                    onClick={() => handleReasonClick(reason)}
                     type="button"
                   >
                     <span>{reason}</span>
