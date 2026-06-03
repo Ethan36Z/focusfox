@@ -102,18 +102,28 @@ refresh, and YouTube embeds require YouTube to be available online.
 
 V2A is a local-first web app with a focus player prototype.
 
+FocusFox is designed as a focus player, not a video browsing app. Media stays
+in the background as atmosphere while the focus timer, distraction episodes,
+review timeline, Monthly Analytics, Focus Source Library, and basic PWA install
+support carry the product experience.
+
 ## Screenshots
 
-Screenshots are planned at these paths:
+![Focus player with local video](docs/screenshots/player-local-video.png)
 
-- `docs/screenshots/player-empty-or-local-video.png`
-- `docs/screenshots/youtube-embed-player.png`
-- `docs/screenshots/active-distraction-overlay.png`
-- `docs/screenshots/completion-modal.png`
-- `docs/screenshots/session-review-timeline.png`
-- `docs/screenshots/monthly-analytics.png`
-- `docs/screenshots/focus-source-library.png`
-- `docs/screenshots/pwa-installed-window.png`
+![YouTube official iframe embed](docs/screenshots/youtube-embed-player.png)
+
+![Active distraction overlay](docs/screenshots/active-distraction-overlay.png)
+
+![Completion modal](docs/screenshots/completion-modal.png)
+
+![Session review timeline](docs/screenshots/session-review-timeline.png)
+
+![Monthly Analytics](docs/screenshots/monthly-analytics.png)
+
+![Focus Source Library](docs/screenshots/focus-source-library.png)
+
+![Installed PWA window](docs/screenshots/pwa-installed-window.png)
 
 ## Future Roadmap
 
