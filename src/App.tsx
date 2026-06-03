@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Coffee, Leaf } from 'lucide-react'
 import { DistractionButtons } from './components/DistractionButtons'
 import { DurationSelector } from './components/DurationSelector'
+import { MonthlyAnalytics } from './components/MonthlyAnalytics'
 import { SessionComplete } from './components/SessionComplete'
 import { SessionHistory } from './components/SessionHistory'
 import { SessionStats } from './components/SessionStats'
@@ -131,6 +132,8 @@ function App() {
       {completedSession && showDetails ? (
         <SessionStats session={completedSession} />
       ) : null}
+
+      <MonthlyAnalytics sessions={completedSessions} />
     </main>
   )
 }

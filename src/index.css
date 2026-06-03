@@ -583,6 +583,126 @@ h2 {
   border-top: 1px solid rgba(94, 152, 143, 0.16);
 }
 
+.analytics-panel {
+  margin-top: 22px;
+}
+
+.analytics-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.month-selector {
+  display: grid;
+  gap: 6px;
+  color: #66817b;
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.month-selector input {
+  min-height: 38px;
+  padding: 0 10px;
+  border: 1px solid rgba(94, 152, 143, 0.28);
+  border-radius: 999px;
+  color: #315f58;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.analytics-empty {
+  display: grid;
+  min-height: 120px;
+  place-items: center;
+  margin: 18px 0 0;
+  border-radius: 18px;
+  color: #6f8984;
+  background: #effaf6;
+  box-shadow: inset 0 0 0 1px rgba(94, 152, 143, 0.18);
+}
+
+.analytics-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.analytics-metrics div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 14px;
+  border-radius: 18px;
+  color: #66817b;
+  background: #effaf6;
+  box-shadow: inset 0 0 0 1px rgba(94, 152, 143, 0.16);
+}
+
+.analytics-metrics strong {
+  overflow: hidden;
+  color: #244842;
+  font-size: 1.35rem;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.analytics-metrics span,
+.analytics-note {
+  color: #6f8984;
+  font-size: 0.86rem;
+}
+
+.analytics-note {
+  margin: 12px 0 0;
+}
+
+.analytics-chart {
+  height: 220px;
+  margin-top: 18px;
+}
+
+.reason-summary {
+  margin-top: 20px;
+}
+
+.reason-summary h3 {
+  margin: 0 0 10px;
+  color: #244842;
+  font-size: 1rem;
+  letter-spacing: 0;
+}
+
+.reason-summary p {
+  margin: 0;
+  color: #6f8984;
+}
+
+.reason-summary ol {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.reason-summary li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  color: #66817b;
+  background: #effaf6;
+}
+
+.reason-summary li span:first-child {
+  color: #315f58;
+  font-weight: 850;
+}
+
 .history-list {
   display: grid;
   gap: 10px;
@@ -722,6 +842,10 @@ input:focus-visible {
   .reason-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+
+  .analytics-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 520px) {
@@ -756,6 +880,15 @@ input:focus-visible {
   }
 
   .custom-reason-form {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-heading,
+  .reason-summary li {
+    flex-direction: column;
+  }
+
+  .analytics-metrics {
     grid-template-columns: 1fr;
   }
 
