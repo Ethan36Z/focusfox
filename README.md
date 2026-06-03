@@ -67,6 +67,11 @@ npm run build
 - Monthly analytics helps users observe longer-term focus patterns without
   leaving the local app.
 
+## Product Docs
+
+- [Product modes](docs/product-modes.md)
+- [Design system](docs/design-system.md)
+
 ## Current Status
 
 V1 is a local web app.
