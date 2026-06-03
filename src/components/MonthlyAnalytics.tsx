@@ -121,6 +121,7 @@ export function MonthlyAnalytics({ sessions }: MonthlyAnalyticsProps) {
     durationSeconds: data.durationSeconds,
   })).sort((a, b) => b.durationSeconds - a.durationSeconds || b.count - a.count)
   const topReason = rankedReasons[0]
+  const topReasonSeconds = Math.max(1, topReason?.durationSeconds ?? 0)
 
   return (
     <section className="panel analytics-panel" aria-labelledby="analytics-title">
@@ -215,8 +216,18 @@ export function MonthlyAnalytics({ sessions }: MonthlyAnalyticsProps) {
               <ol>
                 {rankedReasons.slice(0, 5).map((reason) => (
                   <li key={reason.reason}>
-                    <span>{reason.reason}</span>
-                    <span>
+                    <span
+                      aria-hidden="true"
+                      className="reason-summary-fill"
+                      style={{
+                        width: `${Math.max(
+                          6,
+                          (reason.durationSeconds / topReasonSeconds) * 100,
+                        )}%`,
+                      }}
+                    />
+                    <span className="reason-summary-name">{reason.reason}</span>
+                    <span className="reason-summary-value">
                       {formatTime(reason.durationSeconds)} · {reason.count}{' '}
                       episodes
                     </span>

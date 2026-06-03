@@ -34,7 +34,7 @@ export function DistractionButtons({
   }
 
   return (
-    <section className="panel" aria-labelledby="distraction-title">
+    <section className="panel distraction-panel" aria-labelledby="distraction-title">
       <div>
         <p className="eyebrow">Gentle check-in</p>
         <h2 id="distraction-title">Notice a distraction</h2>
