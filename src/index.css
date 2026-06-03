@@ -176,7 +176,7 @@ h2 {
 
 .workspace-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.65fr);
   gap: 22px;
   align-items: start;
   margin-top: 22px;
@@ -191,8 +191,8 @@ h2 {
 .focus-column {
   position: relative;
   overflow: hidden;
-  gap: 14px;
-  padding: 18px;
+  gap: 12px;
+  padding: 16px;
   border: 1px solid var(--fox-glass-border);
   border-radius: 34px;
   background:
@@ -239,9 +239,9 @@ h2 {
 .duration-panel {
   display: grid;
   gap: 12px;
-  padding: 16px 18px;
+  padding: 14px 16px;
   border-color: rgba(255, 255, 255, 0.34);
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.12);
   box-shadow: none;
 }
 
@@ -375,18 +375,22 @@ h2 {
 }
 
 .focus-player {
+  position: relative;
+  overflow: hidden;
   display: grid;
-  gap: 12px;
-  padding: 16px;
+  gap: 14px;
+  min-height: 650px;
+  padding: 18px;
   border: 1px solid rgba(255, 255, 255, 0.46);
-  border-radius: 24px;
+  border-radius: 30px;
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.52), rgba(247, 253, 255, 0.28)),
-    rgba(255, 255, 255, 0.24);
+    linear-gradient(145deg, rgba(255, 255, 255, 0.58), rgba(237, 248, 255, 0.24)),
+    radial-gradient(ellipse at 14% 10%, rgba(10, 132, 255, 0.12), transparent 38%),
+    rgba(255, 255, 255, 0.25);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.54),
-    0 14px 34px rgba(67, 92, 122, 0.08);
-  backdrop-filter: blur(18px) saturate(1.06);
+    0 26px 70px rgba(67, 92, 122, 0.14);
+  backdrop-filter: blur(24px) saturate(1.08);
 }
 
 .focus-player-header {
@@ -398,6 +402,20 @@ h2 {
 
 .focus-player h2 {
   font-size: 1rem;
+}
+
+.focus-player-stage {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  min-height: 470px;
+  border-radius: 26px;
+  background:
+    linear-gradient(145deg, rgba(29, 67, 88, 0.24), rgba(255, 255, 255, 0.1)),
+    rgba(236, 248, 255, 0.62);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.42),
+    0 20px 50px rgba(67, 92, 122, 0.13);
 }
 
 .media-picker {
@@ -436,34 +454,53 @@ h2 {
 
 .media-empty,
 .media-surface {
+  position: absolute;
+  inset: 0;
   border-radius: 18px;
-  background: rgba(248, 253, 255, 0.5);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.48);
+  background:
+    radial-gradient(ellipse at 50% 12%, rgba(255, 255, 255, 0.34), transparent 34%),
+    linear-gradient(145deg, rgba(66, 123, 153, 0.18), rgba(248, 253, 255, 0.42)),
+    rgba(248, 253, 255, 0.54);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
 }
 
 .media-empty {
   display: grid;
-  min-height: 96px;
   place-items: center;
-  padding: 18px;
-  color: #6f8984;
+  padding: 34px;
+  color: #5f7d90;
+  font-size: 1rem;
+  font-weight: 750;
   text-align: center;
 }
 
 .media-surface {
-  display: grid;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
-  padding: 12px;
+  justify-content: space-between;
+  padding: 14px;
 }
 
 .media-file-name {
+  position: relative;
+  z-index: 2;
+  width: fit-content;
+  max-width: min(520px, calc(100% - 28px));
   overflow: hidden;
+  padding: 7px 12px;
+  border-radius: 999px;
   margin: 0;
-  color: #315d75;
-  font-size: 0.88rem;
+  color: rgba(247, 253, 255, 0.94);
+  font-size: 0.82rem;
   font-weight: 850;
+  background: rgba(28, 64, 83, 0.22);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  text-shadow: 0 1px 8px rgba(24, 50, 67, 0.22);
   text-overflow: ellipsis;
   white-space: nowrap;
+  backdrop-filter: blur(14px);
 }
 
 .media-surface audio,
@@ -473,16 +510,99 @@ h2 {
 }
 
 .media-surface video {
-  max-height: 280px;
-  border-radius: 14px;
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  border-radius: inherit;
   background: rgba(24, 50, 67, 0.82);
-  object-fit: contain;
+  object-fit: cover;
+}
+
+.audio-focus-surface {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  flex: 1;
+  min-height: 260px;
+  place-items: end center;
+  padding: 0 10px 18px;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(10, 132, 255, 0.16), transparent 26%),
+    radial-gradient(circle at 45% 44%, rgba(123, 213, 192, 0.16), transparent 30%);
+}
+
+.audio-orb {
+  position: absolute;
+  top: 28%;
+  left: 50%;
+  width: min(190px, 40%);
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.72), transparent 20%),
+    linear-gradient(145deg, rgba(10, 132, 255, 0.2), rgba(52, 199, 89, 0.18));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.48),
+    0 24px 60px rgba(10, 132, 255, 0.16);
+  transform: translateX(-50%);
+}
+
+.audio-focus-surface audio {
+  position: relative;
+  z-index: 1;
+  max-width: 560px;
+}
+
+.player-timer-layer {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  min-height: 100%;
+  place-items: center;
+  padding: 28px;
+  pointer-events: none;
+}
+
+.focus-player .timer-card {
+  width: min(570px, 100%);
+  min-height: auto;
+  padding: 30px 28px;
+  border-radius: 30px;
+  background:
+    linear-gradient(180deg, rgba(21, 61, 84, 0.26), rgba(255, 255, 255, 0.16)),
+    rgba(255, 255, 255, 0.14);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.36),
+    0 22px 58px rgba(21, 61, 84, 0.2);
+  backdrop-filter: blur(24px) saturate(1.1);
+  pointer-events: auto;
+}
+
+.focus-player .timer-time {
+  font-size: clamp(4.8rem, 12vw, 8.2rem);
+}
+
+.player-control-layer {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+}
+
+.player-control-layer .timer-controls {
+  padding: 0;
 }
 
 .media-note {
   margin: 0;
   color: #7a948f;
   font-size: 0.82rem;
+  text-align: center;
+}
+
+.player-boundary-note {
+  color: #7a948f;
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
 .timer-controls {
@@ -511,15 +631,19 @@ h2 {
 }
 
 .distraction-panel {
+  padding: 20px;
   border-color: rgba(255, 255, 255, 0.34);
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.62), rgba(248, 253, 255, 0.3)),
-    rgba(255, 255, 255, 0.42);
+    linear-gradient(145deg, rgba(255, 255, 255, 0.54), rgba(248, 253, 255, 0.26)),
+    rgba(255, 255, 255, 0.3);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.46),
+    0 12px 32px rgba(67, 92, 122, 0.08);
 }
 
 .reason-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   margin-top: 16px;
 }
@@ -527,9 +651,9 @@ h2 {
 .reason-button {
   min-width: 0;
   width: 100%;
-  min-height: 38px;
-  padding: 0 13px;
-  font-size: 0.9rem;
+  min-height: 36px;
+  padding: 0 12px;
+  font-size: 0.84rem;
   font-weight: 800;
 }
 

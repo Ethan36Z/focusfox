@@ -88,18 +88,23 @@ function App() {
       <div className="workspace-grid">
         <div className="focus-column">
           <DurationSelector />
-          <TimerDisplay
-            progressPercent={progressPercent}
-            remainingSeconds={remainingSeconds}
-            statusLabel={statusLabel}
-          />
-          <FocusPlayer />
-          <TimerControls
-            status={status}
-            onPause={pauseSession}
-            onReset={resetSession}
-            onResume={resumeSession}
-            onStart={startSession}
+          <FocusPlayer
+            timer={
+              <TimerDisplay
+                progressPercent={progressPercent}
+                remainingSeconds={remainingSeconds}
+                statusLabel={statusLabel}
+              />
+            }
+            controls={
+              <TimerControls
+                status={status}
+                onPause={pauseSession}
+                onReset={resetSession}
+                onResume={resumeSession}
+                onStart={startSession}
+              />
+            }
           />
         </div>
 
