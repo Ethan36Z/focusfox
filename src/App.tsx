@@ -129,20 +129,18 @@ function App() {
             }
           />
         </div>
-
-        <div className="side-column">
-          <SessionHistory
-            onClearHistory={clearHistory}
-            onOpenSession={openCompletedSession}
-            selectedSessionId={completedSession?.id ?? null}
-            sessions={completedSessions}
-          />
-        </div>
       </div>
 
       {completedSession && showDetails ? (
         <SessionStats session={completedSession} />
       ) : null}
+
+      <SessionHistory
+        onClearHistory={clearHistory}
+        onOpenSession={openCompletedSession}
+        selectedSessionId={completedSession?.id ?? null}
+        sessions={completedSessions}
+      />
 
       <MonthlyAnalytics sessions={completedSessions} />
     </main>

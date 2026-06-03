@@ -176,7 +176,7 @@ h2 {
 
 .workspace-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.65fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 22px;
   align-items: start;
   margin-top: 22px;
@@ -386,7 +386,7 @@ h2 {
   overflow: hidden;
   display: grid;
   gap: 14px;
-  min-height: 650px;
+  min-height: 600px;
   padding: 18px;
   border: 1px solid rgba(255, 255, 255, 0.46);
   border-radius: 30px;
@@ -415,7 +415,7 @@ h2 {
   position: relative;
   overflow: hidden;
   display: grid;
-  min-height: 470px;
+  min-height: 500px;
   border-radius: 26px;
   background:
     linear-gradient(145deg, rgba(29, 67, 88, 0.24), rgba(255, 255, 255, 0.1)),
@@ -562,19 +562,19 @@ h2 {
 
 .player-timer-layer {
   position: absolute;
-  left: 18px;
-  bottom: 62px;
+  left: 16px;
+  bottom: 56px;
   z-index: 3;
   display: grid;
-  width: min(330px, calc(100% - 36px));
+  width: min(230px, calc(100% - 32px));
   pointer-events: auto;
 }
 
 .focus-player .timer-card {
   width: 100%;
   min-height: auto;
-  padding: 14px 16px 13px;
-  border-radius: 22px;
+  padding: 10px 12px 11px;
+  border-radius: 18px;
   background:
     linear-gradient(180deg, rgba(21, 61, 84, 0.3), rgba(255, 255, 255, 0.18)),
     rgba(255, 255, 255, 0.2);
@@ -585,17 +585,21 @@ h2 {
 }
 
 .focus-player .timer-time {
-  margin: 2px 0 12px;
-  font-size: clamp(2.9rem, 7vw, 4.2rem);
+  margin: 0 0 8px;
+  font-size: clamp(2rem, 4.8vw, 3rem);
 }
 
 .focus-player .timer-card .eyebrow,
 .focus-player .timer-card .progress-copy {
-  font-size: 0.74rem;
+  font-size: 0.68rem;
 }
 
 .focus-player .progress-track {
-  height: 5px;
+  height: 4px;
+}
+
+.focus-player .progress-copy {
+  margin-top: 8px;
 }
 
 .player-control-layer {
@@ -623,10 +627,10 @@ h2 {
 
 .player-distraction-corner {
   position: absolute;
-  top: 18px;
-  right: 18px;
+  top: 14px;
+  right: 14px;
   z-index: 4;
-  width: min(330px, calc(100% - 36px));
+  width: min(280px, calc(100% - 28px));
 }
 
 .timer-controls {
@@ -661,15 +665,15 @@ h2 {
 
 .distraction-menu-toggle {
   display: inline-flex;
-  gap: 8px;
+  gap: 7px;
   align-items: center;
   justify-content: center;
   max-width: 100%;
-  min-height: 40px;
-  padding: 0 14px;
+  min-height: 36px;
+  padding: 0 12px;
   border-radius: 999px;
   color: #f7fffb;
-  font-size: 0.86rem;
+  font-size: 0.8rem;
   font-weight: 850;
   background:
     linear-gradient(135deg, rgba(10, 132, 255, 0.82), rgba(37, 154, 139, 0.78)),
@@ -682,11 +686,11 @@ h2 {
 
 .distraction-menu-toggle strong {
   overflow: hidden;
-  max-width: 160px;
-  padding: 3px 8px;
+  max-width: 128px;
+  padding: 2px 7px;
   border-radius: 999px;
   color: #285466;
-  font-size: 0.76rem;
+  font-size: 0.7rem;
   background: rgba(255, 255, 255, 0.74);
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -694,12 +698,12 @@ h2 {
 
 .distraction-menu-body {
   display: grid;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
-  padding: 16px;
-  margin-top: 10px;
+  padding: 12px;
+  margin-top: 8px;
   border: 1px solid rgba(255, 255, 255, 0.46);
-  border-radius: 22px;
+  border-radius: 18px;
   background:
     linear-gradient(145deg, rgba(255, 255, 255, 0.76), rgba(241, 250, 255, 0.48)),
     rgba(255, 255, 255, 0.36);
@@ -718,10 +722,10 @@ h2 {
   justify-content: space-between;
   gap: 10px;
   align-items: center;
-  padding: 9px 11px;
-  border-radius: 16px;
+  padding: 7px 9px;
+  border-radius: 14px;
   color: #2c6077;
-  font-size: 0.86rem;
+  font-size: 0.78rem;
   font-weight: 850;
   background:
     linear-gradient(135deg, rgba(10, 132, 255, 0.14), rgba(52, 199, 89, 0.14)),
@@ -735,17 +739,17 @@ h2 {
 
 .reason-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
   margin-top: 0;
 }
 
 .reason-button {
   min-width: 0;
   width: 100%;
-  min-height: 36px;
-  padding: 0 12px;
-  font-size: 0.84rem;
+  min-height: 32px;
+  padding: 0 10px;
+  font-size: 0.78rem;
   font-weight: 800;
 }
 
@@ -772,7 +776,7 @@ h2 {
 }
 
 .reason-chip .reason-button {
-  padding-right: 30px;
+  padding-right: 28px;
 }
 
 .reason-chip .reason-button:only-child {
@@ -782,11 +786,11 @@ h2 {
 .remove-reason-button {
   position: absolute;
   top: 50%;
-  right: 8px;
+  right: 6px;
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   border-radius: 999px;
   color: #5e7f78;
   background: rgba(255, 255, 255, 0.7);
@@ -800,14 +804,14 @@ h2 {
 .custom-reason-form {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 10px;
-  margin-top: 12px;
+  gap: 8px;
+  margin-top: 0;
 }
 
 .custom-reason-form input {
   min-width: 0;
-  min-height: 38px;
-  padding: 0 14px;
+  min-height: 34px;
+  padding: 0 12px;
   border: 1px solid rgba(94, 152, 143, 0.28);
   border-radius: 999px;
   color: #214842;
@@ -815,8 +819,8 @@ h2 {
 }
 
 .custom-reason-form .secondary-button {
-  min-height: 38px;
-  padding: 0 16px;
+  min-height: 34px;
+  padding: 0 13px;
 }
 
 .completion-card {
@@ -1218,6 +1222,10 @@ h2 {
   list-style: none;
 }
 
+.history-panel {
+  margin-top: 22px;
+}
+
 .history-heading {
   display: flex;
   justify-content: space-between;
@@ -1367,7 +1375,7 @@ input:focus-visible {
   }
 
   .reason-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .analytics-metrics {
