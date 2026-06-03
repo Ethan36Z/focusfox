@@ -590,7 +590,55 @@ h2 {
     transform 180ms ease;
 }
 
+.media-surface-youtube {
+  padding: 0;
+  background: rgba(24, 50, 67, 0.82);
+}
+
+.media-surface-youtube iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: inherit;
+  background: rgba(24, 50, 67, 0.82);
+}
+
+.youtube-fallback {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 144px;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  pointer-events: none;
+}
+
+.youtube-fallback p,
+.youtube-fallback a {
+  margin: 0;
+  padding: 7px 10px;
+  border-radius: 999px;
+  color: rgba(247, 253, 255, 0.94);
+  font-size: 0.78rem;
+  font-weight: 850;
+  background: rgba(28, 64, 83, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  text-decoration: none;
+  text-shadow: 0 1px 8px rgba(24, 50, 67, 0.22);
+  backdrop-filter: blur(14px);
+}
+
+.youtube-fallback a {
+  pointer-events: auto;
+}
+
 .focus-player-stage.distraction-active .media-surface video,
+.focus-player-stage.distraction-active .media-surface-youtube iframe,
 .focus-player-stage.distraction-active .audio-focus-surface {
   filter: brightness(0.68) blur(1.5px);
   transform: scale(1.01);

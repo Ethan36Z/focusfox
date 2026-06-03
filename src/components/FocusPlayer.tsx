@@ -47,10 +47,12 @@ export function FocusPlayer({
   const [isDurationOpen, setIsDurationOpen] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isTimerVisible, setIsTimerVisible] = useState(true)
+  const [embedFailed, setEmbedFailed] = useState(false)
   const [mediaUrl, setMediaUrl] = useState<string | null>(null)
   const [mediaKind, setMediaKind] = useState<MediaKind | null>(null)
   const [fileName, setFileName] = useState('')
   const objectUrlRef = useRef<string | null>(null)
+  const selectedSource = useMediaStore((state) => state.selectedSource)
   const addFocusSource = useMediaStore((state) => state.addFocusSource)
   const setRuntimeLocalFile = useMediaStore(
     (state) => state.setRuntimeLocalFile,
@@ -75,6 +77,10 @@ export function FocusPlayer({
       document.removeEventListener('fullscreenchange', handleFullscreenChange)
     }
   }, [])
+
+  useEffect(() => {
+    setEmbedFailed(false)
+  }, [selectedSource?.id])
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -116,6 +122,19 @@ export function FocusPlayer({
     await playerRef.current?.requestFullscreen()
   }
 
+  const isSelectedRuntimeLocalSource =
+    selectedSource?.type === 'localAudio' || selectedSource?.type === 'localVideo'
+  const shouldShowRuntimeMedia =
+    Boolean(mediaUrl && mediaKind) &&
+    (!selectedSource || isSelectedRuntimeLocalSource)
+  const runtimeMediaUrl = shouldShowRuntimeMedia ? mediaUrl : null
+  const runtimeMediaKind = shouldShowRuntimeMedia ? mediaKind : null
+  const shouldShowYouTube =
+    selectedSource?.type === 'youtube' && Boolean(selectedSource.embedUrl)
+  const selectedYouTubeSource = shouldShowYouTube ? selectedSource : null
+  const displayTitle =
+    selectedSource?.title ?? (fileName || 'No local media selected')
+
   return (
     <section
       className="focus-player"
@@ -133,11 +152,38 @@ export function FocusPlayer({
             : 'focus-player-stage'
         }
       >
-        {mediaUrl && mediaKind ? (
-          <div className={`media-surface media-surface-${mediaKind}`}>
-            {mediaKind === 'video' ? (
+        {selectedYouTubeSource?.embedUrl ? (
+          <div className="media-surface media-surface-youtube">
+            <iframe
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              onError={() => setEmbedFailed(true)}
+              src={selectedYouTubeSource.embedUrl}
+              title={selectedYouTubeSource.title}
+            />
+            <div className="youtube-fallback">
+              {embedFailed ? (
+                <p>
+                  This video may not allow embedded playback. Open it externally
+                  instead.
+                </p>
+              ) : null}
+              {selectedYouTubeSource.url ? (
+                <a
+                  href={selectedYouTubeSource.url}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Open on YouTube
+                </a>
+              ) : null}
+            </div>
+          </div>
+        ) : runtimeMediaUrl && runtimeMediaKind ? (
+          <div className={`media-surface media-surface-${runtimeMediaKind}`}>
+            {runtimeMediaKind === 'video' ? (
               <video
-                src={mediaUrl}
+                src={runtimeMediaUrl}
                 controls
                 aria-label={`Playing ${fileName}`}
               />
@@ -145,7 +191,7 @@ export function FocusPlayer({
               <div className="audio-focus-surface">
                 <div className="audio-orb" aria-hidden="true" />
                 <audio
-                  src={mediaUrl}
+                  src={runtimeMediaUrl}
                   controls
                   aria-label={`Playing ${fileName}`}
                 />
@@ -159,8 +205,8 @@ export function FocusPlayer({
         )}
 
         <div className="player-chrome">
-          <p className="media-file-name" title={fileName || 'No media selected'}>
-            {fileName || 'No local media selected'}
+          <p className="media-file-name" title={displayTitle}>
+            {displayTitle}
           </p>
           <div className="player-chrome-actions">
             <button

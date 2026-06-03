@@ -3,6 +3,10 @@ import {
   canHandleExternalLink,
   createExternalLinkSource,
 } from '../media/adapters/ExternalLinkAdapter'
+import {
+  canHandleYouTubeUrl,
+  createYouTubeSource,
+} from '../media/adapters/YouTubeAdapter'
 import { useMediaStore } from '../store/mediaStore'
 import type { FocusSource, FocusSourceType } from '../types/media'
 
@@ -56,10 +60,20 @@ export function FocusSourceLibrary() {
       return
     }
 
-    addFocusSource({
-      ...createExternalLinkSource(trimmedUrl),
-      title: trimmedTitle.slice(0, 80),
-    })
+    const safeTitle = trimmedTitle.slice(0, 80)
+    const source = canHandleYouTubeUrl(trimmedUrl)
+      ? createYouTubeSource(safeTitle, trimmedUrl)
+      : {
+          ...createExternalLinkSource(trimmedUrl),
+          title: safeTitle,
+        }
+
+    if (!source) {
+      setError('That YouTube link could not be parsed for embedded playback.')
+      return
+    }
+
+    addFocusSource(source)
     setTitle('')
     setUrl('')
     setError('')

@@ -26,6 +26,9 @@ their attention away and review it after the session.
 - Top distraction reason
 - Daily focus minutes chart
 - Ranked distraction reason summary
+- Local audio/video focus player
+- Small focus source library for saved source metadata
+- YouTube official iframe embed for user-provided public links
 - Local-first data storage with localStorage
 
 ## Tech Stack
@@ -55,6 +58,8 @@ npm run build
 5. Review the completion summary, individual session timeline, chart, and
    history.
 6. Use Monthly Analytics to review longer-term focus patterns by month.
+7. Optionally choose a local media file or add a user-provided YouTube link as
+   focus atmosphere.
 
 ## Product Design Notes
 
@@ -66,6 +71,8 @@ npm run build
   it should be read as a reflection aid rather than a perfect measurement.
 - Monthly analytics helps users observe longer-term focus patterns without
   leaving the local app.
+- YouTube support uses official iframe embeds for user-provided links. Some
+  videos may not allow embedded playback.
 
 ## Product Docs
 
@@ -74,7 +81,7 @@ npm run build
 
 ## Current Status
 
-V1 is a local web app.
+V2A is a local-first web app with a focus player prototype.
 
 ## Screenshots
 
@@ -89,9 +96,8 @@ Screenshots are planned at these paths:
 ## Future Roadmap
 
 - Yearly analytics
-- Multi-source lofi player
-- Local audio/video support
-- YouTube official embed support
+- Broader multi-source lofi player controls
+- Bilibili embed/live support if safe
 - Optional FreeTube/external player link support
 - Browser overlay extension for video and livestream sites
 - Optional theme/color controls
