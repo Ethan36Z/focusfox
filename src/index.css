@@ -484,8 +484,8 @@ h2 {
 
 .timeline-lane-label {
   overflow: hidden;
-  color: #45635d;
-  font-size: 0.84rem;
+  color: #66817b;
+  font-size: 0.8rem;
   font-weight: 850;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -493,7 +493,7 @@ h2 {
 
 .timeline-lane-track {
   position: relative;
-  min-height: 28px;
+  min-height: 24px;
   border-radius: 999px;
   background:
     linear-gradient(90deg, rgba(104, 174, 164, 0.13) 1px, transparent 1px),
@@ -513,8 +513,8 @@ h2 {
 
 .timeline-segment {
   position: absolute;
-  top: 7px;
-  bottom: 7px;
+  top: 8px;
+  bottom: 8px;
   display: block;
   overflow: hidden;
   min-width: 8px;

@@ -105,8 +105,9 @@ export function SessionHistory({
                     className={`focus-ratio-pill ${getFocusRatioClass(
                       focusRatio,
                     )}`}
+                    title={`Reported focus: ${focusRatio}%. Based on recorded distraction time.`}
                   >
-                    Reported focus {focusRatio}%
+                    {focusRatio}%
                   </span>
                 </button>
               </li>
