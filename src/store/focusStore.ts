@@ -43,6 +43,10 @@ interface FocusState {
   clearHistory: () => void
   viewDetails: () => void
   startAnotherSession: () => void
+  restoreFocusData: (
+    completedSessions: CompletedSession[],
+    customReasons: string[],
+  ) => void
 }
 
 const DEFAULT_MINUTES = 25
@@ -354,6 +358,35 @@ export const useFocusStore = create<FocusState>((set, get) => ({
       distractions: [],
       activeDistractionEpisode: null,
       completedSession: null,
+      showDetails: false,
+    })
+  },
+
+  restoreFocusData: (completedSessions, customReasons) => {
+    const normalizedReasons = customReasons
+      .map(normalizeReasonLabel)
+      .filter(Boolean)
+    const uniqueReasons = Array.from(
+      new Map(
+        normalizedReasons.map((reason) => [
+          reason.toLocaleLowerCase(),
+          reason,
+        ]),
+      ).values(),
+    )
+
+    saveCompletedSessions(completedSessions)
+    saveCustomReasons(uniqueReasons)
+    set({
+      status: 'idle',
+      totalSeconds: minutesToSeconds(get().selectedMinutes),
+      remainingSeconds: minutesToSeconds(get().selectedMinutes),
+      startedAt: null,
+      distractions: [],
+      activeDistractionEpisode: null,
+      completedSession: null,
+      completedSessions,
+      customReasons: uniqueReasons,
       showDetails: false,
     })
   },

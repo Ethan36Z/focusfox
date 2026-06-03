@@ -1665,6 +1665,59 @@ h2 {
   font-size: 0.82rem;
 }
 
+.data-backup {
+  display: grid;
+  gap: 14px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(248, 253, 255, 0.38)),
+    rgba(255, 255, 255, 0.3);
+}
+
+.data-backup-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.data-backup-heading span {
+  padding: 5px 10px;
+  border-radius: 999px;
+  color: #0969c8;
+  font-size: 0.78rem;
+  font-weight: 850;
+  background: rgba(10, 132, 255, 0.1);
+}
+
+.data-backup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.data-backup-actions .primary-button,
+.data-backup-actions .secondary-button {
+  min-height: 40px;
+  padding: 0 16px;
+}
+
+.backup-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.backup-message {
+  margin: 0;
+  color: #4f6c7d;
+  font-size: 0.88rem;
+  font-weight: 750;
+}
+
 .history-heading {
   display: flex;
   justify-content: space-between;

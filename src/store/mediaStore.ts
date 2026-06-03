@@ -24,6 +24,10 @@ interface MediaState {
   selectFocusSource: (sourceId: string) => void
   clearSelectedFocusSource: () => void
   setRuntimeLocalFile: (metadata: RuntimeLocalFileMetadata | null) => void
+  restoreMediaData: (
+    focusSources: FocusSource[],
+    selectedFocusSourceId: string | null,
+  ) => void
 }
 
 function getSelectedSource(
@@ -118,4 +122,28 @@ export const useMediaStore = create<MediaState>((set, get) => ({
       runtimeLocalFile: metadata,
       selectedLocalFileName: metadata?.fileName ?? null,
     }),
+
+  restoreMediaData: (focusSources, selectedFocusSourceId) => {
+    const safeSelectedFocusSourceId = focusSources.some(
+      (source) => source.id === selectedFocusSourceId,
+    )
+      ? selectedFocusSourceId
+      : null
+
+    saveFocusSources(focusSources)
+
+    if (safeSelectedFocusSourceId) {
+      saveSelectedFocusSourceId(safeSelectedFocusSourceId)
+    } else {
+      clearSelectedFocusSourceId()
+    }
+
+    set({
+      focusSources,
+      selectedFocusSourceId: safeSelectedFocusSourceId,
+      selectedSource: getSelectedSource(focusSources, safeSelectedFocusSourceId),
+      selectedLocalFileName: null,
+      runtimeLocalFile: null,
+    })
+  },
 }))

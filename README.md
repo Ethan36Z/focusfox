@@ -35,6 +35,7 @@ their attention away and review it after the session.
 - Small focus source library for saved source metadata
 - YouTube official iframe embed for user-provided public links
 - Basic PWA install support
+- Local JSON export/import backup
 - Local-first data storage with localStorage
 
 ## Tech Stack
@@ -66,6 +67,7 @@ npm run build
 6. Use Monthly Analytics to review longer-term focus patterns by month.
 7. Optionally choose a local media file or add a user-provided YouTube link as
    focus atmosphere.
+8. Use Data Backup to export or import local FocusFox data as a JSON file.
 
 ## Product Design Notes
 
@@ -92,6 +94,16 @@ offer an install option. Focus/session data remains local-first in the browser.
 
 This does not mean media works offline: local files must be re-selected after a
 refresh, and YouTube embeds require YouTube to be available online.
+
+## Local Data Backup
+
+FocusFox can export completed sessions, custom distraction reasons, and focus
+source metadata to a JSON backup file. Import runs entirely in the browser and
+asks before replacing local data.
+
+Backups do not include local audio/video file contents. Local files remain
+runtime-only and must be re-selected after refresh or restore. There is no cloud
+sync.
 
 ## Product Docs
 
@@ -128,7 +140,6 @@ support carry the product experience.
 ## Future Roadmap
 
 - Yearly analytics
-- Export/import for local data
 - Broader multi-source lofi player controls
 - Bilibili embed/live support if safe
 - Optional FreeTube/external player link support

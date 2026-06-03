@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Coffee, Leaf } from 'lucide-react'
+import { DataBackup } from './components/DataBackup'
 import { DistractionButtons } from './components/DistractionButtons'
 import { DurationSelector } from './components/DurationSelector'
 import { FocusPlayer } from './components/FocusPlayer'
@@ -12,7 +13,7 @@ import { TimerControls } from './components/TimerControls'
 import { TimerDisplay } from './components/TimerDisplay'
 import { useFocusStore } from './store/focusStore'
 
-type ReviewTab = 'review' | 'history' | 'analytics' | 'sources'
+type ReviewTab = 'review' | 'history' | 'analytics' | 'sources' | 'data'
 
 function App() {
   const [reviewTab, setReviewTab] = useState<ReviewTab>('review')
@@ -48,6 +49,7 @@ function App() {
     { id: 'history', label: 'History' },
     { id: 'analytics', label: 'Monthly Analytics' },
     { id: 'sources', label: 'Focus Sources' },
+    { id: 'data', label: 'Data' },
   ]
 
   useEffect(() => {
@@ -212,6 +214,8 @@ function App() {
           ) : null}
 
           {reviewTab === 'sources' ? <FocusSourceLibrary /> : null}
+
+          {reviewTab === 'data' ? <DataBackup /> : null}
         </div>
       </section>
     </main>
