@@ -30,8 +30,8 @@ their attention away and review it after the session.
 - Compact player chrome with timer HUD, duration menu, media picker, fullscreen,
   and timer visibility controls
 - Active distraction overlay with a calm End action
-- Tabbed review panel for session review, history, monthly analytics, and focus
-  sources
+- Tabbed review panel for session review, history, monthly analytics, focus
+  sources, and data backup
 - Small focus source library for saved source metadata
 - YouTube official iframe embed for user-provided public links
 - Bilibili official iframe embed for user-provided BV video links

@@ -33,9 +33,10 @@ marking attention drift, not punishment.
 Review Mode appears after a session or when opening session details.
 
 It contains the completion summary, duration chart, focus timeline, details
-table, session history, monthly analytics, and focus sources. In V2A these are
-organized in a tabbed review panel below the player. Review should be calm and
-optional: users complete first, then choose whether to inspect the details.
+table, session history, monthly analytics, focus sources, and data backup. In
+V2A these are organized in a tabbed review panel below the player. Review
+should be calm and optional: users complete first, then choose whether to
+inspect the details.
 
 ## Analytics Mode
 
