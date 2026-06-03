@@ -4,6 +4,10 @@ import {
   createExternalLinkSource,
 } from '../media/adapters/ExternalLinkAdapter'
 import {
+  canHandleBilibiliUrl,
+  createBilibiliSource,
+} from '../media/adapters/BilibiliAdapter'
+import {
   canHandleYouTubeUrl,
   createYouTubeSource,
 } from '../media/adapters/YouTubeAdapter'
@@ -61,15 +65,23 @@ export function FocusSourceLibrary() {
     }
 
     const safeTitle = trimmedTitle.slice(0, 80)
-    const source = canHandleYouTubeUrl(trimmedUrl)
-      ? createYouTubeSource(safeTitle, trimmedUrl)
-      : {
-          ...createExternalLinkSource(trimmedUrl),
-          title: safeTitle,
-        }
+    let source: FocusSource | null = null
+
+    if (canHandleYouTubeUrl(trimmedUrl)) {
+      source = createYouTubeSource(safeTitle, trimmedUrl)
+    } else if (canHandleBilibiliUrl(trimmedUrl)) {
+      source = createBilibiliSource(safeTitle, trimmedUrl)
+    } else {
+      source = {
+        ...createExternalLinkSource(trimmedUrl),
+        title: safeTitle,
+      }
+    }
 
     if (!source) {
-      setError('That YouTube link could not be parsed for embedded playback.')
+      setError(
+        'That media link could not be parsed for embedded playback. Try a YouTube link, Bilibili BV video link, or save it as a plain external URL.',
+      )
       return
     }
 

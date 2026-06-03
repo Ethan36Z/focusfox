@@ -580,12 +580,14 @@ h2 {
     transform 180ms ease;
 }
 
-.media-surface-youtube {
+.media-surface-youtube,
+.media-surface-bilibili {
   padding: 0;
   background: rgba(24, 50, 67, 0.82);
 }
 
-.media-surface-youtube iframe {
+.media-surface-youtube iframe,
+.media-surface-bilibili iframe {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -595,7 +597,7 @@ h2 {
   background: rgba(24, 50, 67, 0.82);
 }
 
-.youtube-fallback {
+.embed-fallback {
   position: absolute;
   left: 16px;
   right: 16px;
@@ -608,8 +610,8 @@ h2 {
   pointer-events: none;
 }
 
-.youtube-fallback p,
-.youtube-fallback a {
+.embed-fallback p,
+.embed-fallback a {
   margin: 0;
   padding: 7px 10px;
   border-radius: 999px;
@@ -623,12 +625,13 @@ h2 {
   backdrop-filter: blur(14px);
 }
 
-.youtube-fallback a {
+.embed-fallback a {
   pointer-events: auto;
 }
 
 .focus-player-stage.distraction-active .media-surface video,
 .focus-player-stage.distraction-active .media-surface-youtube iframe,
+.focus-player-stage.distraction-active .media-surface-bilibili iframe,
 .focus-player-stage.distraction-active .audio-focus-surface {
   filter: brightness(0.68) blur(1.5px);
   transform: scale(1.01);

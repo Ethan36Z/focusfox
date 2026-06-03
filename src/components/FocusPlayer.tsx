@@ -132,6 +132,9 @@ export function FocusPlayer({
   const shouldShowYouTube =
     selectedSource?.type === 'youtube' && Boolean(selectedSource.embedUrl)
   const selectedYouTubeSource = shouldShowYouTube ? selectedSource : null
+  const shouldShowBilibili =
+    selectedSource?.type === 'bilibili' && Boolean(selectedSource.embedUrl)
+  const selectedBilibiliSource = shouldShowBilibili ? selectedSource : null
   const displayTitle =
     selectedSource?.title ?? (fileName || 'No local media selected')
 
@@ -161,7 +164,7 @@ export function FocusPlayer({
               src={selectedYouTubeSource.embedUrl}
               title={selectedYouTubeSource.title}
             />
-            <div className="youtube-fallback">
+            <div className="embed-fallback">
               {embedFailed ? (
                 <p>
                   This video may not allow embedded playback. Open it on
@@ -175,6 +178,33 @@ export function FocusPlayer({
                   target="_blank"
                 >
                   Open on YouTube
+                </a>
+              ) : null}
+            </div>
+          </div>
+        ) : selectedBilibiliSource?.embedUrl ? (
+          <div className="media-surface media-surface-bilibili">
+            <iframe
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
+              onError={() => setEmbedFailed(true)}
+              src={selectedBilibiliSource.embedUrl}
+              title={selectedBilibiliSource.title}
+            />
+            <div className="embed-fallback">
+              {embedFailed ? (
+                <p>
+                  This Bilibili video may not allow embedded playback. Open it
+                  on Bilibili instead.
+                </p>
+              ) : null}
+              {selectedBilibiliSource.url ? (
+                <a
+                  href={selectedBilibiliSource.url}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Open on Bilibili
                 </a>
               ) : null}
             </div>

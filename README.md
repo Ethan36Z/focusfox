@@ -34,6 +34,7 @@ their attention away and review it after the session.
   sources
 - Small focus source library for saved source metadata
 - YouTube official iframe embed for user-provided public links
+- Bilibili official iframe embed for user-provided BV video links
 - Basic PWA install support
 - Local JSON export/import backup
 - Local-first data storage with localStorage
@@ -78,8 +79,8 @@ does not provide offline media playback.
 5. Review the completion summary, individual session timeline, chart, and
    history.
 6. Use Monthly Analytics to review longer-term focus patterns by month.
-7. Optionally choose a local media file or add a user-provided YouTube link as
-   focus atmosphere.
+7. Optionally choose a local media file or add a user-provided YouTube or
+   Bilibili link as focus atmosphere.
 8. Use Data Backup to export or import local FocusFox data as a JSON file.
 
 ## Product Design Notes
@@ -94,6 +95,8 @@ does not provide offline media playback.
   leaving the local app.
 - YouTube support uses official iframe embeds for user-provided links. Some
   videos may not allow embedded playback.
+- Bilibili support uses user-provided BV video links and official iframe embed
+  behavior. Some videos may not allow embedded playback.
 - FocusFox does not download, cache, rip, proxy, or redistribute third-party
   media.
 - FocusFox is not a video browsing app: there is no search, recommendation
@@ -106,7 +109,8 @@ FocusFox includes basic web app manifest support, so compatible browsers may
 offer an install option. Focus/session data remains local-first in the browser.
 
 This does not mean media works offline: local files must be re-selected after a
-refresh, and YouTube embeds require YouTube to be available online.
+refresh, and YouTube/Bilibili embeds require their platforms to be available
+online.
 
 ## Local Data Backup
 
@@ -129,8 +133,8 @@ V2A is a local-first web app with a focus player prototype.
 
 FocusFox is designed as a focus player, not a video browsing app. Media stays
 in the background as atmosphere while the focus timer, distraction episodes,
-review timeline, Monthly Analytics, Focus Source Library, and basic PWA install
-support carry the product experience.
+review timeline, Monthly Analytics, Focus Source Library, local backup, and
+basic PWA install support carry the product experience.
 
 ## Screenshots
 
@@ -154,7 +158,7 @@ support carry the product experience.
 
 - Yearly analytics
 - Broader multi-source lofi player controls
-- Bilibili embed/live support if safe
+- Optional Bilibili live support if safe
 - Optional FreeTube/external player link support
 - Browser overlay extension for video and livestream sites
 - Optional theme/color controls

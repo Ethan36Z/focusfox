@@ -49,9 +49,10 @@ readable and reflective without feeling like a corporate analytics dashboard.
 
 Media Source Mode is an active V2A foundation.
 
-Media is atmosphere, not the product. FocusFox supports local audio/video and
-user-provided YouTube official iframe embeds in V2A. Future directions may
-include Bilibili embed/live if safe and optional FreeTube/external player links.
+Media is atmosphere, not the product. FocusFox supports local audio/video,
+user-provided YouTube official iframe embeds, and user-provided Bilibili BV
+video iframe embeds in V2A. Future directions may include Bilibili live support
+if safe and optional FreeTube/external player links.
 
 The V2A media source foundation stores source metadata locally, but local file
 content remains runtime-only and is not saved. FocusFox does not download,
