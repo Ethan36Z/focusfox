@@ -56,6 +56,19 @@ npm run dev
 npm run build
 ```
 
+## Deployment
+
+FocusFox is a static Vite app and can be deployed to platforms such as Vercel
+or Netlify.
+
+- Build command: `npm run build`
+- Output directory: `dist`
+- Install command: `npm install`
+
+For PWA install prompts, deploy to a real HTTPS URL. FocusFox does not use a
+service worker yet, so install support is basic manifest-based PWA support; it
+does not provide offline media playback.
+
 ## How to Use
 
 1. Choose a focus duration.
