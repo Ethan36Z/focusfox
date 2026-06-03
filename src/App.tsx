@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Coffee, Leaf } from 'lucide-react'
 import { DistractionButtons } from './components/DistractionButtons'
 import { DurationSelector } from './components/DurationSelector'
+import { FocusPlayer } from './components/FocusPlayer'
 import { MonthlyAnalytics } from './components/MonthlyAnalytics'
 import { SessionComplete } from './components/SessionComplete'
 import { SessionHistory } from './components/SessionHistory'
@@ -92,6 +93,7 @@ function App() {
             remainingSeconds={remainingSeconds}
             statusLabel={statusLabel}
           />
+          <FocusPlayer />
           <TimerControls
             status={status}
             onPause={pauseSession}
