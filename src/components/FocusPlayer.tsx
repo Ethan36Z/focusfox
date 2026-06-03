@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import { Clock3, FolderOpen } from 'lucide-react'
+import {
+  Clock3,
+  Eye,
+  EyeOff,
+  FolderOpen,
+  Maximize2,
+  Minimize2,
+} from 'lucide-react'
 import type { ChangeEvent } from 'react'
 import type { ReactNode } from 'react'
 import type { FocusStatus } from '../types/focus'
@@ -31,7 +38,10 @@ export function FocusPlayer({
   status,
   timer,
 }: FocusPlayerProps) {
+  const playerRef = useRef<HTMLElement | null>(null)
   const [isDurationOpen, setIsDurationOpen] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isTimerVisible, setIsTimerVisible] = useState(true)
   const [mediaUrl, setMediaUrl] = useState<string | null>(null)
   const [mediaKind, setMediaKind] = useState<MediaKind | null>(null)
   const [fileName, setFileName] = useState('')
@@ -42,6 +52,18 @@ export function FocusPlayer({
       if (objectUrlRef.current) {
         URL.revokeObjectURL(objectUrlRef.current)
       }
+    }
+  }, [])
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(document.fullscreenElement === playerRef.current)
+    }
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange)
     }
   }, [])
 
@@ -68,8 +90,21 @@ export function FocusPlayer({
     setIsDurationOpen(false)
   }
 
+  const handleFullscreenToggle = async () => {
+    if (document.fullscreenElement === playerRef.current) {
+      await document.exitFullscreen()
+      return
+    }
+
+    await playerRef.current?.requestFullscreen()
+  }
+
   return (
-    <section className="focus-player" aria-labelledby="focus-player-title">
+    <section
+      className="focus-player"
+      ref={playerRef}
+      aria-labelledby="focus-player-title"
+    >
       <h2 className="visually-hidden" id="focus-player-title">
         Local focus player
       </h2>
@@ -134,6 +169,36 @@ export function FocusPlayer({
               />
               <FolderOpen size={16} aria-hidden="true" />
             </label>
+            <button
+              aria-label={isTimerVisible ? 'Hide timer HUD' : 'Show timer HUD'}
+              className="player-chrome-button"
+              onClick={() => setIsTimerVisible((current) => !current)}
+              title={isTimerVisible ? 'Hide timer' : 'Show timer'}
+              type="button"
+            >
+              {isTimerVisible ? (
+                <EyeOff size={16} aria-hidden="true" />
+              ) : (
+                <Eye size={16} aria-hidden="true" />
+              )}
+            </button>
+            <button
+              aria-label={
+                isFullscreen
+                  ? 'Exit FocusFox fullscreen'
+                  : 'Enter FocusFox fullscreen'
+              }
+              className="player-chrome-button"
+              onClick={handleFullscreenToggle}
+              title={isFullscreen ? 'Exit fullscreen' : 'FocusFox fullscreen'}
+              type="button"
+            >
+              {isFullscreen ? (
+                <Minimize2 size={16} aria-hidden="true" />
+              ) : (
+                <Maximize2 size={16} aria-hidden="true" />
+              )}
+            </button>
             {distractions}
           </div>
         </div>
@@ -153,7 +218,9 @@ export function FocusPlayer({
           </div>
         ) : null}
 
-        <div className="player-timer-layer">{timer}</div>
+        {isTimerVisible ? (
+          <div className="player-timer-layer">{timer}</div>
+        ) : null}
         {activeDistractionLabel ? (
           <div className="active-distraction-overlay">
             <span>{activeDistractionLabel}</span>
@@ -178,18 +245,8 @@ export function FocusPlayer({
         {completion ? (
           <div className="player-completion-overlay">{completion}</div>
         ) : null}
+        <div className="player-control-layer">{controls}</div>
       </div>
-
-      <div className="player-control-layer">
-        {controls}
-        <div className="player-boundary-note">
-          Media and timer controls stay separate for now.
-        </div>
-      </div>
-
-      <p className="media-note">
-        Local files stay in this browser session and are not saved.
-      </p>
     </section>
   )
 }

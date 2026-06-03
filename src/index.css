@@ -408,6 +408,21 @@ h2 {
   backdrop-filter: blur(24px) saturate(1.08);
 }
 
+.focus-player:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  padding: 18px;
+  border: 0;
+  border-radius: 0;
+  background: #061822;
+}
+
+.focus-player:fullscreen .focus-player-stage {
+  min-height: calc(100vh - 36px);
+  border-radius: 22px;
+}
+
 .focus-player-stage {
   position: relative;
   overflow: hidden;
@@ -619,7 +634,7 @@ h2 {
 .player-timer-layer {
   position: absolute;
   left: 14px;
-  bottom: 54px;
+  bottom: 96px;
   z-index: 3;
   display: grid;
   width: min(210px, calc(100% - 28px));
@@ -663,26 +678,50 @@ h2 {
 }
 
 .player-control-layer {
-  display: grid;
-  gap: 8px;
-  justify-items: center;
+  position: absolute;
+  right: 14px;
+  bottom: 52px;
+  z-index: 4;
 }
 
 .player-control-layer .timer-controls {
+  gap: 8px;
   padding: 0;
 }
 
-.media-note {
-  margin: 0;
-  color: #7a948f;
-  font-size: 0.82rem;
-  text-align: center;
+.player-control-layer .primary-button,
+.player-control-layer .secondary-button,
+.player-control-layer .ghost-button {
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0;
+  border-radius: 999px;
+  color: #f7fffb;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.12)),
+    rgba(28, 64, 83, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 12px 24px rgba(21, 61, 84, 0.14);
+  backdrop-filter: blur(18px) saturate(1.08);
 }
 
-.player-boundary-note {
-  color: #7a948f;
-  font-size: 0.78rem;
-  font-weight: 700;
+.player-control-layer .primary-button {
+  background:
+    linear-gradient(135deg, rgba(10, 132, 255, 0.82), rgba(37, 154, 139, 0.72)),
+    rgba(28, 64, 83, 0.18);
+}
+
+.player-control-layer .control-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .active-distraction-overlay {
@@ -1609,6 +1648,16 @@ input:focus-visible {
 
   .distraction-menu-toggle {
     width: 38px;
+  }
+
+  .player-control-layer .timer-controls {
+    flex-direction: row;
+  }
+
+  .player-control-layer .primary-button,
+  .player-control-layer .secondary-button,
+  .player-control-layer .ghost-button {
+    width: 40px;
   }
 
   .reason-grid {

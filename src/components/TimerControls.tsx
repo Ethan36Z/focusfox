@@ -23,23 +23,41 @@ export function TimerControls({
   return (
     <div className="timer-controls" aria-label="Timer controls">
       {status === 'idle' || status === 'completed' ? (
-        <button className="primary-button" onClick={onStart} type="button">
+        <button
+          aria-label={startLabel}
+          className="primary-button"
+          onClick={onStart}
+          title={startLabel}
+          type="button"
+        >
           <Play size={18} aria-hidden="true" />
-          {startLabel}
+          <span className="control-label">{startLabel}</span>
         </button>
       ) : null}
 
       {isRunning ? (
-        <button className="secondary-button" onClick={onPause} type="button">
+        <button
+          aria-label="Pause"
+          className="secondary-button"
+          onClick={onPause}
+          title="Pause"
+          type="button"
+        >
           <Pause size={18} aria-hidden="true" />
-          Pause
+          <span className="control-label">Pause</span>
         </button>
       ) : null}
 
       {isPaused ? (
-        <button className="primary-button" onClick={onResume} type="button">
+        <button
+          aria-label="Resume"
+          className="primary-button"
+          onClick={onResume}
+          title="Resume"
+          type="button"
+        >
           <Play size={18} aria-hidden="true" />
-          Resume
+          <span className="control-label">Resume</span>
         </button>
       ) : null}
 
@@ -47,10 +65,12 @@ export function TimerControls({
         className="ghost-button"
         disabled={status === 'idle'}
         onClick={onReset}
+        aria-label="Reset"
+        title="Reset"
         type="button"
       >
         <RotateCcw size={18} aria-hidden="true" />
-        Reset
+        <span className="control-label">Reset</span>
       </button>
     </div>
   )
