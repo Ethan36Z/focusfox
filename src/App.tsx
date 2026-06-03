@@ -1,121 +1,106 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useEffect } from 'react'
+import { Coffee, Leaf } from 'lucide-react'
+import { DistractionButtons } from './components/DistractionButtons'
+import { DurationSelector } from './components/DurationSelector'
+import { SessionComplete } from './components/SessionComplete'
+import { SessionHistory } from './components/SessionHistory'
+import { SessionStats } from './components/SessionStats'
+import { TimerControls } from './components/TimerControls'
+import { TimerDisplay } from './components/TimerDisplay'
+import { useFocusStore } from './store/focusStore'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const status = useFocusStore((state) => state.status)
+  const totalSeconds = useFocusStore((state) => state.totalSeconds)
+  const remainingSeconds = useFocusStore((state) => state.remainingSeconds)
+  const completedSession = useFocusStore((state) => state.completedSession)
+  const completedSessions = useFocusStore((state) => state.completedSessions)
+  const showDetails = useFocusStore((state) => state.showDetails)
+  const startSession = useFocusStore((state) => state.startSession)
+  const pauseSession = useFocusStore((state) => state.pauseSession)
+  const resumeSession = useFocusStore((state) => state.resumeSession)
+  const resetSession = useFocusStore((state) => state.resetSession)
+  const tick = useFocusStore((state) => state.tick)
+  const recordDistraction = useFocusStore((state) => state.recordDistraction)
+  const viewDetails = useFocusStore((state) => state.viewDetails)
+  const startAnotherSession = useFocusStore((state) => state.startAnotherSession)
+
+  useEffect(() => {
+    if (status !== 'running') {
+      return
+    }
+
+    const intervalId = window.setInterval(tick, 1000)
+
+    return () => window.clearInterval(intervalId)
+  }, [status, tick])
+
+  const progressPercent =
+    totalSeconds === 0
+      ? 0
+      : Math.min(100, ((totalSeconds - remainingSeconds) / totalSeconds) * 100)
+  const statusLabel =
+    status === 'running'
+      ? 'Fox mode is on'
+      : status === 'paused'
+        ? 'Paused, still peaceful'
+        : status === 'completed'
+          ? 'Finished gently'
+          : 'Ready when you are'
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <main className="app-shell">
+      <section className="hero-band" aria-labelledby="app-title">
+        <div className="brand-mark" aria-hidden="true">
+          <Leaf size={22} />
+          <Coffee size={22} />
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
+        <p className="eyebrow">Lofi focus sessions</p>
+        <h1 id="app-title">FocusFox</h1>
+        <p className="hero-copy">
+          Settle in, finish one calm block, and only look at the details when
+          you feel ready.
+        </p>
       </section>
 
-      <div className="ticks"></div>
+      {completedSession ? (
+        <SessionComplete
+          session={completedSession}
+          onStartAnother={startAnotherSession}
+          onViewDetails={viewDetails}
+        />
+      ) : null}
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+      <div className="workspace-grid">
+        <div className="focus-column">
+          <DurationSelector />
+          <TimerDisplay
+            progressPercent={progressPercent}
+            remainingSeconds={remainingSeconds}
+            statusLabel={statusLabel}
+          />
+          <TimerControls
+            status={status}
+            onPause={pauseSession}
+            onReset={resetSession}
+            onResume={resumeSession}
+            onStart={startSession}
+          />
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+        <div className="side-column">
+          <DistractionButtons
+            disabled={status !== 'running'}
+            onRecord={recordDistraction}
+          />
+          <SessionHistory sessions={completedSessions} />
+        </div>
+      </div>
+
+      {completedSession && showDetails ? (
+        <SessionStats session={completedSession} />
+      ) : null}
+    </main>
   )
 }
 
