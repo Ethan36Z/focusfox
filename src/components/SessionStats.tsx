@@ -57,6 +57,15 @@ export function SessionStats({ session }: SessionStatsProps) {
   const timelineDistractions = normalizedDistractions.filter(
     (distraction) => distraction.durationSeconds > 0,
   )
+  const timelineLanes = Array.from(
+    timelineDistractions.reduce((lanes, distraction) => {
+      const distractions = lanes.get(distraction.reason) ?? []
+      distractions.push(distraction)
+      lanes.set(distraction.reason, distractions)
+      return lanes
+    }, new Map<string, typeof timelineDistractions>()),
+    ([reason, distractions]) => ({ reason, distractions }),
+  )
   const timelineTicks = [0, 0.25, 0.5, 0.75, 1].map((position) => ({
     position,
     label: formatTime(totalSeconds * position),
@@ -120,49 +129,64 @@ export function SessionStats({ session }: SessionStatsProps) {
           </span>
         </div>
 
-        <div className="focus-timeline" aria-label="Focus timeline">
-          {timelineTicks.map((tick) => (
-            <span
-              className="timeline-tick"
-              key={tick.position}
-              style={{ left: `${tick.position * 100}%` }}
-            />
-          ))}
-          {timelineDistractions.length === 0 ? (
+        <div className="timeline-lanes" aria-label="Focus timeline by reason">
+          {timelineLanes.length === 0 ? (
             <p className="timeline-empty">
               No distraction episodes recorded for this session.
             </p>
           ) : (
-            timelineDistractions.map((distraction) => {
-              const left = Math.min(
-                100,
-                Math.max(0, (distraction.startSeconds / totalSeconds) * 100),
-              )
-              const naturalWidth =
-                (distraction.durationSeconds / totalSeconds) * 100
-              const width = Math.min(100 - left, Math.max(1.25, naturalWidth))
-              const isMarker = naturalWidth < 3
+            timelineLanes.map((lane) => (
+              <div className="timeline-lane" key={lane.reason}>
+                <span className="timeline-lane-label">{lane.reason}</span>
+                <div className="timeline-lane-track">
+                  {timelineTicks.map((tick) => (
+                    <span
+                      className="timeline-tick"
+                      key={tick.position}
+                      style={{ left: `${tick.position * 100}%` }}
+                    />
+                  ))}
+                  {lane.distractions.map((distraction) => {
+                    const left = Math.min(
+                      100,
+                      Math.max(
+                        0,
+                        (distraction.startSeconds / totalSeconds) * 100,
+                      ),
+                    )
+                    const naturalWidth =
+                      (distraction.durationSeconds / totalSeconds) * 100
+                    const width = Math.min(
+                      100 - left,
+                      Math.max(1.5, naturalWidth),
+                    )
+                    const isMarker = naturalWidth < 3
 
-              return (
-                <span
-                  aria-label={`${distraction.reason}, ${formatTime(
-                    distraction.startSeconds,
-                  )} to ${formatTime(distraction.endSeconds)}`}
-                  className={
-                    isMarker
-                      ? 'timeline-segment timeline-marker'
-                      : 'timeline-segment'
-                  }
-                  key={distraction.id}
-                  style={{ left: `${left}%`, width: `${width}%` }}
-                  title={`${distraction.reason}: ${formatTime(
-                    distraction.startSeconds,
-                  )} - ${formatTime(distraction.endSeconds)} (${formatTime(
-                    distraction.durationSeconds,
-                  )})`}
-                />
-              )
-            })
+                    return (
+                      <span
+                        aria-label={`${distraction.reason}, ${formatTime(
+                          distraction.startSeconds,
+                        )} to ${formatTime(distraction.endSeconds)}, ${formatTime(
+                          distraction.durationSeconds,
+                        )}`}
+                        className={
+                          isMarker
+                            ? 'timeline-segment timeline-marker'
+                            : 'timeline-segment'
+                        }
+                        key={distraction.id}
+                        style={{ left: `${left}%`, width: `${width}%` }}
+                        title={`${distraction.reason}: ${formatTime(
+                          distraction.startSeconds,
+                        )} - ${formatTime(distraction.endSeconds)} (${formatTime(
+                          distraction.durationSeconds,
+                        )})`}
+                      />
+                    )
+                  })}
+                </div>
+              </div>
+            ))
           )}
         </div>
         <div className="timeline-scale" aria-hidden="true">

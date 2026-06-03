@@ -466,16 +466,40 @@ h2 {
   font-weight: 750;
 }
 
-.focus-timeline {
-  position: relative;
-  overflow: hidden;
-  min-height: 54px;
+.timeline-lanes {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
   border-radius: 18px;
-  background:
-    linear-gradient(90deg, rgba(104, 174, 164, 0.14) 1px, transparent 1px),
-    #effaf6;
-  background-size: 10% 100%;
+  background: #effaf6;
   box-shadow: inset 0 0 0 1px rgba(94, 152, 143, 0.18);
+}
+
+.timeline-lane {
+  display: grid;
+  grid-template-columns: minmax(80px, 0.22fr) minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.timeline-lane-label {
+  overflow: hidden;
+  color: #45635d;
+  font-size: 0.84rem;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timeline-lane-track {
+  position: relative;
+  min-height: 28px;
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, rgba(104, 174, 164, 0.13) 1px, transparent 1px),
+    rgba(255, 255, 255, 0.48);
+  background-size: 25% 100%;
+  box-shadow: inset 0 0 0 1px rgba(94, 152, 143, 0.12);
 }
 
 .timeline-tick {
@@ -489,8 +513,8 @@ h2 {
 
 .timeline-segment {
   position: absolute;
-  top: 12px;
-  bottom: 12px;
+  top: 7px;
+  bottom: 7px;
   display: block;
   overflow: hidden;
   min-width: 8px;
@@ -504,13 +528,14 @@ h2 {
 
 .timeline-marker {
   min-width: 10px;
+  border-radius: 999px;
   border: 2px solid rgba(255, 255, 255, 0.72);
   background: #4d9288;
 }
 
 .timeline-empty {
   display: grid;
-  min-height: 54px;
+  min-height: 42px;
   place-items: center;
   margin: 0;
   color: #6f8984;
@@ -590,10 +615,10 @@ h2 {
 }
 
 .history-button {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(86px, 0.7fr) minmax(130px, 1fr) auto;
   width: 100%;
-  justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
   align-items: center;
   padding: 14px 16px;
   border-radius: inherit;
@@ -608,7 +633,7 @@ h2 {
   box-shadow: inset 0 0 0 2px rgba(104, 174, 164, 0.34);
 }
 
-.history-button div {
+.history-main {
   display: grid;
 }
 
@@ -618,6 +643,39 @@ h2 {
 
 .history-button span {
   font-size: 0.9rem;
+}
+
+.history-meta {
+  color: #66817b;
+}
+
+.focus-ratio-pill {
+  justify-self: end;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.focus-ratio-pill.high {
+  color: #2d6459;
+  background: #d9f5e8;
+}
+
+.focus-ratio-pill.good {
+  color: #326674;
+  background: #dff4f6;
+}
+
+.focus-ratio-pill.okay {
+  color: #806938;
+  background: #f7edcf;
+}
+
+.focus-ratio-pill.low {
+  color: #7d5560;
+  background: #f3dde2;
 }
 
 button:hover:not(:disabled) {
@@ -703,7 +761,11 @@ input:focus-visible {
 
   .history-button {
     align-items: flex-start;
-    flex-direction: column;
+    grid-template-columns: 1fr;
     gap: 6px;
+  }
+
+  .focus-ratio-pill {
+    justify-self: start;
   }
 }

@@ -9,6 +9,33 @@ interface SessionHistoryProps {
   sessions: CompletedSession[]
 }
 
+function getFocusRatio(totalSeconds: number, distractedSeconds: number) {
+  if (totalSeconds <= 0) {
+    return 100
+  }
+
+  return Math.max(
+    0,
+    Math.min(100, ((totalSeconds - distractedSeconds) / totalSeconds) * 100),
+  )
+}
+
+function getFocusRatioClass(focusRatio: number) {
+  if (focusRatio >= 90) {
+    return 'high'
+  }
+
+  if (focusRatio >= 75) {
+    return 'good'
+  }
+
+  if (focusRatio >= 50) {
+    return 'okay'
+  }
+
+  return 'low'
+}
+
 export function SessionHistory({
   onClearHistory,
   onOpenSession,
@@ -51,6 +78,9 @@ export function SessionHistory({
                 total + getDistractionDurationSeconds(distraction),
               0,
             )
+            const focusRatio = Math.round(
+              getFocusRatio(session.totalSeconds, distractedSeconds),
+            )
 
             return (
               <li key={session.id}>
@@ -63,13 +93,20 @@ export function SessionHistory({
                   onClick={() => onOpenSession(session.id)}
                   type="button"
                 >
-                  <div>
+                  <div className="history-main">
                     <strong>{session.durationMinutes} min</strong>
                     <span>{formatDateTime(session.completedAt)}</span>
                   </div>
-                  <span>
+                  <span className="history-meta">
                     {session.distractions.length} episodes ·{' '}
                     {formatTime(distractedSeconds)} distracted
+                  </span>
+                  <span
+                    className={`focus-ratio-pill ${getFocusRatioClass(
+                      focusRatio,
+                    )}`}
+                  >
+                    Reported focus {focusRatio}%
                   </span>
                 </button>
               </li>
