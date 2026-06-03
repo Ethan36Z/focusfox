@@ -1,5 +1,7 @@
 import { Sparkles } from 'lucide-react'
 import type { CompletedSession } from '../types/focus'
+import { getDistractionDurationSeconds } from '../utils/reasons'
+import { formatTime } from '../utils/time'
 
 interface SessionCompleteProps {
   session: CompletedSession
@@ -12,6 +14,11 @@ export function SessionComplete({
   onStartAnother,
   onViewDetails,
 }: SessionCompleteProps) {
+  const totalDistractionSeconds = session.distractions.reduce(
+    (total, distraction) => total + getDistractionDurationSeconds(distraction),
+    0,
+  )
+
   return (
     <section className="completion-card" aria-labelledby="complete-title">
       <div className="completion-icon">
@@ -27,6 +34,10 @@ export function SessionComplete({
         <span>
           <strong>{session.distractions.length}</strong>
           distractions noted
+        </span>
+        <span>
+          <strong>{formatTime(totalDistractionSeconds)}</strong>
+          distraction time
         </span>
       </div>
       <div className="completion-actions">

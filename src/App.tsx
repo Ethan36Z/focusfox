@@ -13,6 +13,9 @@ function App() {
   const status = useFocusStore((state) => state.status)
   const totalSeconds = useFocusStore((state) => state.totalSeconds)
   const remainingSeconds = useFocusStore((state) => state.remainingSeconds)
+  const activeDistractionEpisode = useFocusStore(
+    (state) => state.activeDistractionEpisode,
+  )
   const completedSession = useFocusStore((state) => state.completedSession)
   const completedSessions = useFocusStore((state) => state.completedSessions)
   const customReasons = useFocusStore((state) => state.customReasons)
@@ -98,6 +101,17 @@ function App() {
 
         <div className="side-column">
           <DistractionButtons
+            activeDurationSeconds={
+              activeDistractionEpisode
+                ? Math.max(
+                    0,
+                    totalSeconds -
+                      remainingSeconds -
+                      activeDistractionEpisode.startElapsedSeconds,
+                  )
+                : 0
+            }
+            activeReasonLabel={activeDistractionEpisode?.reasonLabel ?? null}
             customReasons={customReasons}
             disabled={status !== 'running'}
             onAddCustomReason={addCustomReason}

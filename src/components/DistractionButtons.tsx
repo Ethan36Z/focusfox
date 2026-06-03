@@ -1,8 +1,11 @@
 import { useState, type FormEvent } from 'react'
 import { X } from 'lucide-react'
 import { DISTRACTION_REASONS } from '../types/focus'
+import { formatTime } from '../utils/time'
 
 interface DistractionButtonsProps {
+  activeDurationSeconds: number
+  activeReasonLabel: string | null
   customReasons: string[]
   disabled: boolean
   onAddCustomReason: (reason: string) => boolean
@@ -11,6 +14,8 @@ interface DistractionButtonsProps {
 }
 
 export function DistractionButtons({
+  activeDurationSeconds,
+  activeReasonLabel,
   customReasons,
   disabled,
   onAddCustomReason,
@@ -41,12 +46,21 @@ export function DistractionButtons({
           return (
             <div className="reason-chip" key={reason}>
               <button
-                className="reason-button"
+                className={
+                  activeReasonLabel === reason
+                    ? 'reason-button active'
+                    : 'reason-button'
+                }
                 disabled={disabled}
                 onClick={() => onRecord(reason)}
                 type="button"
               >
-                {reason}
+                <span>{reason}</span>
+                {activeReasonLabel === reason ? (
+                  <span className="reason-timer">
+                    {formatTime(activeDurationSeconds)}
+                  </span>
+                ) : null}
               </button>
               {isCustom ? (
                 <button

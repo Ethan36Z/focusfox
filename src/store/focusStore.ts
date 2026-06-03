@@ -1,7 +1,8 @@
 import { create } from 'zustand'
 import type {
+  ActiveDistractionEpisode,
   CompletedSession,
-  DistractionEvent,
+  DistractionEpisode,
   DistractionReasonLabel,
   FocusStatus,
 } from '../types/focus'
@@ -21,7 +22,8 @@ interface FocusState {
   totalSeconds: number
   remainingSeconds: number
   startedAt: string | null
-  distractions: DistractionEvent[]
+  distractions: DistractionEpisode[]
+  activeDistractionEpisode: ActiveDistractionEpisode | null
   completedSession: CompletedSession | null
   completedSessions: CompletedSession[]
   customReasons: string[]
@@ -57,6 +59,41 @@ function persistCompletedSession(
   return nextSessions
 }
 
+function getElapsedSeconds(totalSeconds: number, remainingSeconds: number) {
+  return Math.min(totalSeconds, Math.max(0, totalSeconds - remainingSeconds))
+}
+
+function startDistractionEpisode(
+  reasonLabel: DistractionReasonLabel,
+  elapsedSeconds: number,
+): ActiveDistractionEpisode {
+  return {
+    id: createId('distraction'),
+    reasonLabel,
+    startElapsedSeconds: elapsedSeconds,
+    startedAt: new Date().toISOString(),
+  }
+}
+
+function closeDistractionEpisode(
+  activeEpisode: ActiveDistractionEpisode,
+  endElapsedSeconds: number,
+  endedAt = new Date().toISOString(),
+): DistractionEpisode {
+  const safeEndElapsedSeconds = Math.max(
+    activeEpisode.startElapsedSeconds,
+    endElapsedSeconds,
+  )
+
+  return {
+    ...activeEpisode,
+    endElapsedSeconds: safeEndElapsedSeconds,
+    durationSeconds:
+      safeEndElapsedSeconds - activeEpisode.startElapsedSeconds,
+    endedAt,
+  }
+}
+
 function normalizeReasonLabel(reasonLabel: string) {
   return reasonLabel.trim().slice(0, MAX_REASON_LENGTH)
 }
@@ -76,6 +113,7 @@ export const useFocusStore = create<FocusState>((set, get) => ({
   remainingSeconds: minutesToSeconds(DEFAULT_MINUTES),
   startedAt: null,
   distractions: [],
+  activeDistractionEpisode: null,
   completedSession: null,
   completedSessions: loadCompletedSessions(),
   customReasons: loadCustomReasons(),
@@ -91,6 +129,7 @@ export const useFocusStore = create<FocusState>((set, get) => ({
       remainingSeconds: seconds,
       status: 'idle',
       distractions: [],
+      activeDistractionEpisode: null,
       startedAt: null,
       completedSession: null,
       showDetails: false,
@@ -108,6 +147,7 @@ export const useFocusStore = create<FocusState>((set, get) => ({
       remainingSeconds: seconds,
       status: 'idle',
       distractions: [],
+      activeDistractionEpisode: null,
       startedAt: null,
       completedSession: null,
       showDetails: false,
@@ -123,6 +163,7 @@ export const useFocusStore = create<FocusState>((set, get) => ({
       remainingSeconds: totalSeconds,
       startedAt: new Date().toISOString(),
       distractions: [],
+      activeDistractionEpisode: null,
       completedSession: null,
       showDetails: false,
     })
@@ -149,6 +190,7 @@ export const useFocusStore = create<FocusState>((set, get) => ({
       remainingSeconds: totalSeconds,
       startedAt: null,
       distractions: [],
+      activeDistractionEpisode: null,
       completedSession: null,
       showDetails: false,
     })
@@ -167,13 +209,23 @@ export const useFocusStore = create<FocusState>((set, get) => ({
     }
 
     const completedAt = new Date().toISOString()
+    const distractions = state.activeDistractionEpisode
+      ? [
+          ...state.distractions,
+          closeDistractionEpisode(
+            state.activeDistractionEpisode,
+            state.totalSeconds,
+            completedAt,
+          ),
+        ]
+      : state.distractions
     const completedSession: CompletedSession = {
       id: createId('session'),
       durationMinutes: Math.round(state.totalSeconds / 60),
       totalSeconds: state.totalSeconds,
       startedAt: state.startedAt ?? completedAt,
       completedAt,
-      distractions: state.distractions,
+      distractions,
     }
     const completedSessions = persistCompletedSession(
       completedSession,
@@ -183,6 +235,8 @@ export const useFocusStore = create<FocusState>((set, get) => ({
     set({
       status: 'completed',
       remainingSeconds: 0,
+      distractions,
+      activeDistractionEpisode: null,
       completedSession,
       completedSessions,
       showDetails: false,
@@ -196,14 +250,42 @@ export const useFocusStore = create<FocusState>((set, get) => ({
       return
     }
 
-    const event: DistractionEvent = {
-      id: createId('distraction'),
-      reasonLabel,
-      timestamp: new Date().toISOString(),
-      elapsedSeconds: state.totalSeconds - state.remainingSeconds,
+    const elapsedSeconds = getElapsedSeconds(
+      state.totalSeconds,
+      state.remainingSeconds,
+    )
+
+    if (!state.activeDistractionEpisode) {
+      set({
+        activeDistractionEpisode: startDistractionEpisode(
+          reasonLabel,
+          elapsedSeconds,
+        ),
+      })
+      return
     }
 
-    set({ distractions: [...state.distractions, event] })
+    const closedEpisode = closeDistractionEpisode(
+      state.activeDistractionEpisode,
+      elapsedSeconds,
+    )
+    const distractions = [...state.distractions, closedEpisode]
+
+    if (state.activeDistractionEpisode.reasonLabel === reasonLabel) {
+      set({
+        distractions,
+        activeDistractionEpisode: null,
+      })
+      return
+    }
+
+    set({
+      distractions,
+      activeDistractionEpisode: startDistractionEpisode(
+        reasonLabel,
+        elapsedSeconds,
+      ),
+    })
   },
 
   addCustomReason: (reasonLabel) => {
@@ -242,6 +324,7 @@ export const useFocusStore = create<FocusState>((set, get) => ({
         totalSeconds: completedSession.totalSeconds,
         remainingSeconds: 0,
         distractions: completedSession.distractions,
+        activeDistractionEpisode: null,
         startedAt: completedSession.startedAt,
       })
     }
@@ -258,6 +341,7 @@ export const useFocusStore = create<FocusState>((set, get) => ({
       remainingSeconds: totalSeconds,
       startedAt: null,
       distractions: [],
+      activeDistractionEpisode: null,
       completedSession: null,
       showDetails: false,
     })

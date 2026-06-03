@@ -10,13 +10,21 @@ export type DistractionReason =
 
 export type DistractionReasonLabel = string
 
-export interface DistractionEvent {
+export interface ActiveDistractionEpisode {
   id: string
   reasonLabel: DistractionReasonLabel
+  startElapsedSeconds: number
+  startedAt: string
+}
+
+export interface DistractionEpisode extends ActiveDistractionEpisode {
+  endElapsedSeconds: number
+  durationSeconds: number
+  endedAt: string
   reason?: DistractionReasonLabel
   reasonId?: DistractionReasonLabel
-  timestamp: string
-  elapsedSeconds: number
+  timestamp?: string
+  elapsedSeconds?: number
 }
 
 export interface CompletedSession {
@@ -25,7 +33,7 @@ export interface CompletedSession {
   totalSeconds: number
   startedAt: string
   completedAt: string
-  distractions: DistractionEvent[]
+  distractions: DistractionEpisode[]
 }
 
 export const DISTRACTION_REASONS: DistractionReason[] = [
