@@ -34,6 +34,7 @@ their attention away and review it after the session.
   sources
 - Small focus source library for saved source metadata
 - YouTube official iframe embed for user-provided public links
+- Basic PWA install support
 - Local-first data storage with localStorage
 
 ## Tech Stack
@@ -83,6 +84,14 @@ npm run build
 - FocusFox is not a video browsing app: there is no search, recommendation
   feed, comments, playlist system, or entertainment browsing surface.
 - Media is atmosphere. Focus is the product.
+
+## PWA Install Support
+
+FocusFox includes basic web app manifest support, so compatible browsers may
+offer an install option. Focus/session data remains local-first in the browser.
+
+This does not mean media works offline: local files must be re-selected after a
+refresh, and YouTube embeds require YouTube to be available online.
 
 ## Product Docs
 

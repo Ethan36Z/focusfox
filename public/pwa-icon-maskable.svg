@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="FocusFox maskable app icon">
+  <defs>
+    <linearGradient id="glass" x1="120" x2="392" y1="112" y2="400" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.54" stop-color="#e4f8ff"/>
+      <stop offset="1" stop-color="#c8f4e7"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="176" x2="336" y1="176" y2="340" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0a84ff"/>
+      <stop offset="1" stop-color="#34c759"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="#f7fcff"/>
+  <circle cx="142" cy="142" r="54" fill="#ff9b8d" opacity="0.28"/>
+  <circle cx="372" cy="150" r="66" fill="#0a84ff" opacity="0.16"/>
+  <circle cx="350" cy="360" r="76" fill="#34c759" opacity="0.18"/>
+  <rect x="126" y="126" width="260" height="260" rx="78" fill="url(#glass)" stroke="#ffffff" stroke-width="16"/>
+  <path d="M186 262c0-50 29-86 70-86s70 36 70 86c0 42-28 76-70 76s-70-34-70-76Z" fill="url(#accent)" opacity="0.92"/>
+  <circle cx="230" cy="252" r="12" fill="#f7fcff"/>
+  <circle cx="282" cy="252" r="12" fill="#f7fcff"/>
+  <path d="M228 296c16 12 40 12 56 0" fill="none" stroke="#f7fcff" stroke-linecap="round" stroke-width="14"/>
+</svg>
