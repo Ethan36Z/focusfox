@@ -680,7 +680,7 @@ h2 {
 .player-control-layer {
   position: absolute;
   right: 14px;
-  bottom: 52px;
+  bottom: 86px;
   z-index: 4;
 }
 
@@ -1643,6 +1643,10 @@ input:focus-visible {
   }
 
   .player-timer-layer {
+    bottom: 52px;
+  }
+
+  .player-control-layer {
     bottom: 52px;
   }
 
