@@ -9,6 +9,11 @@ import {
 } from 'lucide-react'
 import type { ChangeEvent } from 'react'
 import type { ReactNode } from 'react'
+import {
+  canHandleLocalFile,
+  createLocalFileSource,
+} from '../media/adapters/LocalFileAdapter'
+import { useMediaStore } from '../store/mediaStore'
 import type { FocusStatus } from '../types/focus'
 
 type MediaKind = 'audio' | 'video'
@@ -46,6 +51,10 @@ export function FocusPlayer({
   const [mediaKind, setMediaKind] = useState<MediaKind | null>(null)
   const [fileName, setFileName] = useState('')
   const objectUrlRef = useRef<string | null>(null)
+  const addFocusSource = useMediaStore((state) => state.addFocusSource)
+  const setRuntimeLocalFile = useMediaStore(
+    (state) => state.setRuntimeLocalFile,
+  )
 
   useEffect(() => {
     return () => {
@@ -83,6 +92,14 @@ export function FocusPlayer({
     setMediaUrl(nextUrl)
     setMediaKind(file.type.startsWith('video/') ? 'video' : 'audio')
     setFileName(file.name)
+
+    if (canHandleLocalFile(file)) {
+      addFocusSource(createLocalFileSource(file))
+      setRuntimeLocalFile({
+        fileName: file.name,
+        mimeType: file.type || undefined,
+      })
+    }
   }
 
   const handleStartFromSetup = () => {

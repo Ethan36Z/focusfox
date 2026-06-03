@@ -52,6 +52,9 @@ Media is atmosphere, not the product. FocusFox may support limited focus sources
 such as local audio/video, YouTube official embed, Bilibili embed/live if safe,
 and optional FreeTube/external player links.
 
+The V2A media source foundation stores source metadata locally, but local file
+content remains runtime-only and is not saved.
+
 FocusFox should avoid becoming a general video-watching tool. This mode should
 not include search, recommendation, comments, social feed, or entertainment
 browsing.
