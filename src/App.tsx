@@ -3,6 +3,7 @@ import { Coffee, Leaf } from 'lucide-react'
 import { DistractionButtons } from './components/DistractionButtons'
 import { DurationSelector } from './components/DurationSelector'
 import { FocusPlayer } from './components/FocusPlayer'
+import { FocusSourceLibrary } from './components/FocusSourceLibrary'
 import { MonthlyAnalytics } from './components/MonthlyAnalytics'
 import { SessionComplete } from './components/SessionComplete'
 import { SessionHistory } from './components/SessionHistory'
@@ -141,6 +142,8 @@ function App() {
           />
         </div>
       </div>
+
+      <FocusSourceLibrary />
 
       {completedSession && showDetails ? (
         <SessionStats session={completedSession} />
