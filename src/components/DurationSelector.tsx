@@ -17,9 +17,12 @@ export function DurationSelector({
   const setDuration = useFocusStore((state) => state.setDuration)
   const setCustomMinutes = useFocusStore((state) => state.setCustomMinutes)
   const soundEnabled = useSoundStore((state) => state.soundEnabled)
+  const soundVolume = useSoundStore((state) => state.soundVolume)
+  const setSoundVolume = useSoundStore((state) => state.setSoundVolume)
   const toggleSound = useSoundStore((state) => state.toggleSound)
   const isLocked =
     status === 'running' || status === 'paused' || isStartCountdownActive
+  const soundVolumePercent = Math.round(soundVolume * 100)
 
   return (
     <section className="panel duration-panel" aria-labelledby="duration-title">
@@ -68,6 +71,23 @@ export function DurationSelector({
         )}
         <span>Sound {soundEnabled ? 'On' : 'Off'}</span>
       </button>
+
+      <label
+        className={soundEnabled ? 'sound-volume' : 'sound-volume muted'}
+      >
+        <span>Volume</span>
+        <input
+          aria-label="Session cue volume"
+          max="100"
+          min="0"
+          onChange={(event) =>
+            setSoundVolume(Number(event.target.value) / 100)
+          }
+          type="range"
+          value={soundVolumePercent}
+        />
+        <strong>{soundVolumePercent}%</strong>
+      </label>
     </section>
   )
 }

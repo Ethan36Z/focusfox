@@ -56,7 +56,9 @@ function App() {
   const clearHistory = useFocusStore((state) => state.clearHistory)
   const viewDetails = useFocusStore((state) => state.viewDetails)
   const soundEnabled = useSoundStore((state) => state.soundEnabled)
+  const soundVolume = useSoundStore((state) => state.soundVolume)
   const soundEnabledRef = useRef(soundEnabled)
+  const soundVolumeRef = useRef(soundVolume)
   const isStartCountdownActive = startCountdownSeconds !== null
 
   const reviewTabs: Array<{ id: ReviewTab; label: string }> = [
@@ -70,6 +72,10 @@ function App() {
   useEffect(() => {
     soundEnabledRef.current = soundEnabled
   }, [soundEnabled])
+
+  useEffect(() => {
+    soundVolumeRef.current = soundVolume
+  }, [soundVolume])
 
   useEffect(() => {
     if (status !== 'running') {
@@ -103,9 +109,9 @@ function App() {
       endWarningSecondRef.current !== remainingSeconds
     ) {
       endWarningSecondRef.current = remainingSeconds
-      playCountdownBeep(soundEnabled)
+      playCountdownBeep(soundEnabled, soundVolume)
     }
-  }, [remainingSeconds, soundEnabled, status])
+  }, [remainingSeconds, soundEnabled, soundVolume, status])
 
   useEffect(() => {
     if (
@@ -113,11 +119,11 @@ function App() {
       previousStatusRef.current === 'running' &&
       completedSession
     ) {
-      playCompletionChime(soundEnabled)
+      playCompletionChime(soundEnabled, soundVolume)
     }
 
     previousStatusRef.current = status
-  }, [completedSession, soundEnabled, status])
+  }, [completedSession, soundEnabled, soundVolume, status])
 
   function clearStartCountdown() {
     if (countdownIntervalRef.current) {
@@ -144,14 +150,14 @@ function App() {
     let nextCountdownSecond = 3
 
     setStartCountdownSeconds(nextCountdownSecond)
-    playCountdownBeep(soundEnabledRef.current)
+    playCountdownBeep(soundEnabledRef.current, soundVolumeRef.current)
 
     countdownIntervalRef.current = window.setInterval(() => {
       nextCountdownSecond -= 1
 
       if (nextCountdownSecond > 0) {
         setStartCountdownSeconds(nextCountdownSecond)
-        playCountdownBeep(soundEnabledRef.current)
+        playCountdownBeep(soundEnabledRef.current, soundVolumeRef.current)
         return
       }
 
@@ -162,7 +168,10 @@ function App() {
 
       setStartCountdownSeconds(null)
 
-      void playStartChime(soundEnabledRef.current).then(() => {
+      void playStartChime(
+        soundEnabledRef.current,
+        soundVolumeRef.current,
+      ).then(() => {
         if (countdownRunRef.current === runId) {
           startSession()
         }

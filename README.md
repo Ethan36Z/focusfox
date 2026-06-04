@@ -91,8 +91,9 @@ does not provide offline media playback.
 - Local-first privacy: completed sessions and custom reasons are stored in the
   browser with localStorage.
 - Session audio cues are generated locally in the browser with Web Audio API
-  tones, and users can turn sound off from the duration menu. Background audio
-  behavior still depends on the browser or installed PWA environment.
+  tones, and users can turn sound off or adjust cue volume from the duration
+  menu. Background audio behavior still depends on the browser or installed PWA
+  environment.
 - Reported focus percentage is based only on user-recorded distraction time, so
   it should be read as a reflection aid rather than a perfect measurement.
 - Monthly analytics helps users observe longer-term focus patterns without

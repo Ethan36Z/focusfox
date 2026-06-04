@@ -2,7 +2,7 @@ type Tone = {
   delayMs: number
   durationMs: number
   frequency: number
-  gain?: number
+  maxGain?: number
 }
 
 type AudioContextConstructor = typeof AudioContext
@@ -36,8 +36,26 @@ function getAudioContext() {
   return audioContext
 }
 
-async function playToneSequence(soundEnabled: boolean, tones: Tone[]) {
+function clampVolume(volume: number) {
+  if (!Number.isFinite(volume)) {
+    return 0.7
+  }
+
+  return Math.min(1, Math.max(0, volume))
+}
+
+async function playToneSequence(
+  soundEnabled: boolean,
+  soundVolume: number,
+  tones: Tone[],
+) {
   if (!soundEnabled) {
+    return
+  }
+
+  const volume = clampVolume(soundVolume)
+
+  if (volume <= 0) {
     return
   }
 
@@ -54,9 +72,10 @@ async function playToneSequence(soundEnabled: boolean, tones: Tone[]) {
 
     const now = context.currentTime
 
-    tones.forEach(({ delayMs, durationMs, frequency, gain = 0.05 }) => {
+    tones.forEach(({ delayMs, durationMs, frequency, maxGain = 0.1 }) => {
       const startTime = now + delayMs / 1000
       const endTime = startTime + durationMs / 1000
+      const gain = maxGain * volume
       const oscillator = context.createOscillator()
       const envelope = context.createGain()
 
@@ -76,16 +95,19 @@ async function playToneSequence(soundEnabled: boolean, tones: Tone[]) {
   }
 }
 
-export function playCountdownBeep(soundEnabled: boolean) {
-  void playToneSequence(soundEnabled, [
-    { delayMs: 0, durationMs: 95, frequency: 640, gain: 0.038 },
+export function playCountdownBeep(soundEnabled: boolean, soundVolume: number) {
+  void playToneSequence(soundEnabled, soundVolume, [
+    { delayMs: 0, durationMs: 95, frequency: 640, maxGain: 0.12 },
   ])
 }
 
-export async function playStartChime(soundEnabled: boolean) {
-  await playToneSequence(soundEnabled, [
-    { delayMs: 0, durationMs: 120, frequency: 660, gain: 0.043 },
-    { delayMs: 130, durationMs: 170, frequency: 880, gain: 0.036 },
+export async function playStartChime(
+  soundEnabled: boolean,
+  soundVolume: number,
+) {
+  await playToneSequence(soundEnabled, soundVolume, [
+    { delayMs: 0, durationMs: 120, frequency: 660, maxGain: 0.13 },
+    { delayMs: 130, durationMs: 170, frequency: 880, maxGain: 0.1 },
   ])
 
   if (soundEnabled) {
@@ -93,10 +115,13 @@ export async function playStartChime(soundEnabled: boolean) {
   }
 }
 
-export function playCompletionChime(soundEnabled: boolean) {
-  void playToneSequence(soundEnabled, [
-    { delayMs: 0, durationMs: 120, frequency: 523.25, gain: 0.042 },
-    { delayMs: 120, durationMs: 150, frequency: 659.25, gain: 0.038 },
-    { delayMs: 260, durationMs: 230, frequency: 783.99, gain: 0.034 },
+export function playCompletionChime(
+  soundEnabled: boolean,
+  soundVolume: number,
+) {
+  void playToneSequence(soundEnabled, soundVolume, [
+    { delayMs: 0, durationMs: 120, frequency: 523.25, maxGain: 0.12 },
+    { delayMs: 120, durationMs: 150, frequency: 659.25, maxGain: 0.1 },
+    { delayMs: 260, durationMs: 230, frequency: 783.99, maxGain: 0.09 },
   ])
 }

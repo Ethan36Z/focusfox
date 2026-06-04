@@ -334,6 +334,30 @@ h2 {
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.42);
 }
 
+.sound-volume {
+  display: grid;
+  grid-template-columns: auto minmax(92px, 1fr) 42px;
+  gap: 9px;
+  align-items: center;
+  color: #5f7d90;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.sound-volume.muted {
+  opacity: 0.62;
+}
+
+.sound-volume input {
+  min-width: 0;
+  accent-color: var(--fox-green-deep);
+}
+
+.sound-volume strong {
+  color: #31596c;
+  text-align: right;
+}
+
 .timer-card {
   display: grid;
   justify-items: center;
