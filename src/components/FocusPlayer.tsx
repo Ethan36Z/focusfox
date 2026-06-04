@@ -27,6 +27,7 @@ interface FocusPlayerProps {
   duration: ReactNode
   onEndActiveDistraction: () => void
   onStart: () => void
+  startCountdownSeconds: number | null
   status: FocusStatus
   timer: ReactNode
 }
@@ -40,6 +41,7 @@ export function FocusPlayer({
   duration,
   onEndActiveDistraction,
   onStart,
+  startCountdownSeconds,
   status,
   timer,
 }: FocusPlayerProps) {
@@ -47,7 +49,10 @@ export function FocusPlayer({
   const [isDurationOpen, setIsDurationOpen] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isTimerVisible, setIsTimerVisible] = useState(true)
-  const [embedFailed, setEmbedFailed] = useState(false)
+  const [embedFailure, setEmbedFailure] = useState<{
+    failed: boolean
+    sourceId: string | null
+  }>({ failed: false, sourceId: null })
   const [mediaUrl, setMediaUrl] = useState<string | null>(null)
   const [mediaKind, setMediaKind] = useState<MediaKind | null>(null)
   const [fileName, setFileName] = useState('')
@@ -77,10 +82,6 @@ export function FocusPlayer({
       document.removeEventListener('fullscreenchange', handleFullscreenChange)
     }
   }, [])
-
-  useEffect(() => {
-    setEmbedFailed(false)
-  }, [selectedSource?.id])
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -137,6 +138,8 @@ export function FocusPlayer({
   const selectedBilibiliSource = shouldShowBilibili ? selectedSource : null
   const displayTitle =
     selectedSource?.title ?? (fileName || 'No local media selected')
+  const embedFailed =
+    embedFailure.failed && embedFailure.sourceId === (selectedSource?.id ?? null)
 
   return (
     <section
@@ -160,7 +163,12 @@ export function FocusPlayer({
             <iframe
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
-              onError={() => setEmbedFailed(true)}
+              onError={() =>
+                setEmbedFailure({
+                  failed: true,
+                  sourceId: selectedYouTubeSource.id,
+                })
+              }
               src={selectedYouTubeSource.embedUrl}
               title={selectedYouTubeSource.title}
             />
@@ -187,7 +195,12 @@ export function FocusPlayer({
             <iframe
               allow="autoplay; fullscreen; picture-in-picture"
               allowFullScreen
-              onError={() => setEmbedFailed(true)}
+              onError={() =>
+                setEmbedFailure({
+                  failed: true,
+                  sourceId: selectedBilibiliSource.id,
+                })
+              }
               src={selectedBilibiliSource.embedUrl}
               title={selectedBilibiliSource.title}
             />
@@ -313,6 +326,16 @@ export function FocusPlayer({
 
         {isTimerVisible ? (
           <div className="player-timer-layer">{timer}</div>
+        ) : null}
+        {startCountdownSeconds ? (
+          <div
+            aria-live="assertive"
+            className="start-countdown-overlay"
+            role="status"
+          >
+            <span>Starting in</span>
+            <strong>{startCountdownSeconds}</strong>
+          </div>
         ) : null}
         {activeDistractionLabel ? (
           <div className="active-distraction-overlay">

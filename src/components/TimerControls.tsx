@@ -3,6 +3,7 @@ import type { FocusStatus } from '../types/focus'
 
 interface TimerControlsProps {
   status: FocusStatus
+  isStartCountdownActive?: boolean
   onPause: () => void
   onReset: () => void
   onResume: () => void
@@ -11,6 +12,7 @@ interface TimerControlsProps {
 
 export function TimerControls({
   status,
+  isStartCountdownActive = false,
   onPause,
   onReset,
   onResume,
@@ -19,10 +21,12 @@ export function TimerControls({
   const isRunning = status === 'running'
   const isPaused = status === 'paused'
   const startLabel = status === 'completed' ? 'Start new session' : 'Start'
+  const resetLabel = isStartCountdownActive ? 'Cancel countdown' : 'Reset'
 
   return (
     <div className="timer-controls" aria-label="Timer controls">
-      {status === 'idle' || status === 'completed' ? (
+      {(status === 'idle' || status === 'completed') &&
+      !isStartCountdownActive ? (
         <button
           aria-label={startLabel}
           className="primary-button"
@@ -63,14 +67,14 @@ export function TimerControls({
 
       <button
         className="ghost-button"
-        disabled={status === 'idle'}
+        disabled={status === 'idle' && !isStartCountdownActive}
         onClick={onReset}
-        aria-label="Reset"
-        title="Reset"
+        aria-label={resetLabel}
+        title={resetLabel}
         type="button"
       >
         <RotateCcw size={18} aria-hidden="true" />
-        <span className="control-label">Reset</span>
+        <span className="control-label">{resetLabel}</span>
       </button>
     </div>
   )

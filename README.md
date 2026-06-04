@@ -29,6 +29,7 @@ their attention away and review it after the session.
 - Local audio/video focus player
 - Compact player chrome with timer HUD, duration menu, media picker, fullscreen,
   and timer visibility controls
+- Optional session audio cues for start countdowns and session endings
 - Active distraction overlay with a calm End action
 - Tabbed review panel for session review, history, monthly analytics, focus
   sources, and data backup
@@ -89,6 +90,9 @@ does not provide offline media playback.
   before inviting the user into details.
 - Local-first privacy: completed sessions and custom reasons are stored in the
   browser with localStorage.
+- Session audio cues are generated locally in the browser with Web Audio API
+  tones, and users can turn sound off from the duration menu. Background audio
+  behavior still depends on the browser or installed PWA environment.
 - Reported focus percentage is based only on user-recorded distraction time, so
   it should be read as a reflection aid rather than a perfect measurement.
 - Monthly analytics helps users observe longer-term focus patterns without

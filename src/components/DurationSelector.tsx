@@ -1,14 +1,25 @@
+import { Volume2, VolumeX } from 'lucide-react'
 import { useFocusStore } from '../store/focusStore'
+import { useSoundStore } from '../store/soundStore'
 
 const PRESET_MINUTES = [25, 45, 60]
 
-export function DurationSelector() {
+interface DurationSelectorProps {
+  isStartCountdownActive?: boolean
+}
+
+export function DurationSelector({
+  isStartCountdownActive = false,
+}: DurationSelectorProps) {
   const selectedMinutes = useFocusStore((state) => state.selectedMinutes)
   const customMinutes = useFocusStore((state) => state.customMinutes)
   const status = useFocusStore((state) => state.status)
   const setDuration = useFocusStore((state) => state.setDuration)
   const setCustomMinutes = useFocusStore((state) => state.setCustomMinutes)
-  const isLocked = status === 'running' || status === 'paused'
+  const soundEnabled = useSoundStore((state) => state.soundEnabled)
+  const toggleSound = useSoundStore((state) => state.toggleSound)
+  const isLocked =
+    status === 'running' || status === 'paused' || isStartCountdownActive
 
   return (
     <section className="panel duration-panel" aria-labelledby="duration-title">
@@ -43,6 +54,20 @@ export function DurationSelector() {
         />
         <span>min</span>
       </label>
+
+      <button
+        aria-pressed={soundEnabled}
+        className="sound-toggle"
+        onClick={toggleSound}
+        type="button"
+      >
+        {soundEnabled ? (
+          <Volume2 size={16} aria-hidden="true" />
+        ) : (
+          <VolumeX size={16} aria-hidden="true" />
+        )}
+        <span>Sound {soundEnabled ? 'On' : 'Off'}</span>
+      </button>
     </section>
   )
 }

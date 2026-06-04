@@ -65,18 +65,14 @@ export function FocusSourceLibrary() {
     }
 
     const safeTitle = trimmedTitle.slice(0, 80)
-    let source: FocusSource | null = null
-
-    if (canHandleYouTubeUrl(trimmedUrl)) {
-      source = createYouTubeSource(safeTitle, trimmedUrl)
-    } else if (canHandleBilibiliUrl(trimmedUrl)) {
-      source = createBilibiliSource(safeTitle, trimmedUrl)
-    } else {
-      source = {
-        ...createExternalLinkSource(trimmedUrl),
-        title: safeTitle,
-      }
-    }
+    const source: FocusSource | null = canHandleYouTubeUrl(trimmedUrl)
+      ? createYouTubeSource(safeTitle, trimmedUrl)
+      : canHandleBilibiliUrl(trimmedUrl)
+        ? createBilibiliSource(safeTitle, trimmedUrl)
+        : {
+            ...createExternalLinkSource(trimmedUrl),
+            title: safeTitle,
+          }
 
     if (!source) {
       setError(

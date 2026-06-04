@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Coffee, Leaf } from 'lucide-react'
 import { DataBackup } from './components/DataBackup'
 import { DistractionButtons } from './components/DistractionButtons'
@@ -12,12 +12,25 @@ import { SessionStats } from './components/SessionStats'
 import { TimerControls } from './components/TimerControls'
 import { TimerDisplay } from './components/TimerDisplay'
 import { useFocusStore } from './store/focusStore'
+import { useSoundStore } from './store/soundStore'
+import {
+  playCompletionChime,
+  playCountdownBeep,
+  playStartChime,
+} from './utils/audioCues'
 
 type ReviewTab = 'review' | 'history' | 'analytics' | 'sources' | 'data'
 
 function App() {
   const [reviewTab, setReviewTab] = useState<ReviewTab>('review')
+  const [startCountdownSeconds, setStartCountdownSeconds] = useState<
+    number | null
+  >(null)
   const status = useFocusStore((state) => state.status)
+  const countdownIntervalRef = useRef<number | null>(null)
+  const countdownRunRef = useRef(0)
+  const endWarningSecondRef = useRef<number | null>(null)
+  const previousStatusRef = useRef(status)
   const totalSeconds = useFocusStore((state) => state.totalSeconds)
   const remainingSeconds = useFocusStore((state) => state.remainingSeconds)
   const activeDistractionEpisode = useFocusStore(
@@ -42,7 +55,9 @@ function App() {
   )
   const clearHistory = useFocusStore((state) => state.clearHistory)
   const viewDetails = useFocusStore((state) => state.viewDetails)
-  const startAnotherSession = useFocusStore((state) => state.startAnotherSession)
+  const soundEnabled = useSoundStore((state) => state.soundEnabled)
+  const soundEnabledRef = useRef(soundEnabled)
+  const isStartCountdownActive = startCountdownSeconds !== null
 
   const reviewTabs: Array<{ id: ReviewTab; label: string }> = [
     { id: 'review', label: 'Session Review' },
@@ -53,6 +68,10 @@ function App() {
   ]
 
   useEffect(() => {
+    soundEnabledRef.current = soundEnabled
+  }, [soundEnabled])
+
+  useEffect(() => {
     if (status !== 'running') {
       return
     }
@@ -61,6 +80,100 @@ function App() {
 
     return () => window.clearInterval(intervalId)
   }, [status, tick])
+
+  useEffect(() => {
+    return () => {
+      if (countdownIntervalRef.current) {
+        window.clearInterval(countdownIntervalRef.current)
+      }
+
+      countdownRunRef.current += 1
+    }
+  }, [])
+
+  useEffect(() => {
+    if (status !== 'running') {
+      endWarningSecondRef.current = null
+      return
+    }
+
+    if (
+      remainingSeconds > 0 &&
+      remainingSeconds <= 5 &&
+      endWarningSecondRef.current !== remainingSeconds
+    ) {
+      endWarningSecondRef.current = remainingSeconds
+      playCountdownBeep(soundEnabled)
+    }
+  }, [remainingSeconds, soundEnabled, status])
+
+  useEffect(() => {
+    if (
+      status === 'completed' &&
+      previousStatusRef.current === 'running' &&
+      completedSession
+    ) {
+      playCompletionChime(soundEnabled)
+    }
+
+    previousStatusRef.current = status
+  }, [completedSession, soundEnabled, status])
+
+  function clearStartCountdown() {
+    if (countdownIntervalRef.current) {
+      window.clearInterval(countdownIntervalRef.current)
+      countdownIntervalRef.current = null
+    }
+
+    countdownRunRef.current += 1
+    setStartCountdownSeconds(null)
+  }
+
+  function handleStartRequest() {
+    if (isStartCountdownActive) {
+      return
+    }
+
+    if (status !== 'idle' && status !== 'completed') {
+      startSession()
+      return
+    }
+
+    const runId = countdownRunRef.current + 1
+    countdownRunRef.current = runId
+    let nextCountdownSecond = 3
+
+    setStartCountdownSeconds(nextCountdownSecond)
+    playCountdownBeep(soundEnabledRef.current)
+
+    countdownIntervalRef.current = window.setInterval(() => {
+      nextCountdownSecond -= 1
+
+      if (nextCountdownSecond > 0) {
+        setStartCountdownSeconds(nextCountdownSecond)
+        playCountdownBeep(soundEnabledRef.current)
+        return
+      }
+
+      if (countdownIntervalRef.current) {
+        window.clearInterval(countdownIntervalRef.current)
+        countdownIntervalRef.current = null
+      }
+
+      setStartCountdownSeconds(null)
+
+      void playStartChime(soundEnabledRef.current).then(() => {
+        if (countdownRunRef.current === runId) {
+          startSession()
+        }
+      })
+    }, 1000)
+  }
+
+  function handleResetRequest() {
+    clearStartCountdown()
+    resetSession()
+  }
 
   const progressPercent =
     totalSeconds === 0
@@ -116,10 +229,10 @@ function App() {
               activeDistractionEpisode?.reasonLabel ?? null
             }
             completion={
-              completedSession ? (
+              completedSession && !isStartCountdownActive ? (
                 <SessionComplete
                   session={completedSession}
-                  onStartAnother={startAnotherSession}
+                  onStartAnother={handleStartRequest}
                   onViewDetails={handleViewDetails}
                 />
               ) : null
@@ -131,13 +244,18 @@ function App() {
                 statusLabel={statusLabel}
               />
             }
-            duration={<DurationSelector />}
+            duration={
+              <DurationSelector
+                isStartCountdownActive={isStartCountdownActive}
+              />
+            }
             onEndActiveDistraction={() => {
               if (activeDistractionEpisode) {
                 recordDistraction(activeDistractionEpisode.reasonLabel)
               }
             }}
-            onStart={startSession}
+            onStart={handleStartRequest}
+            startCountdownSeconds={startCountdownSeconds}
             status={status}
             distractions={
               <DistractionButtons
@@ -155,10 +273,11 @@ function App() {
             controls={
               <TimerControls
                 status={status}
+                isStartCountdownActive={isStartCountdownActive}
                 onPause={pauseSession}
-                onReset={resetSession}
+                onReset={handleResetRequest}
                 onResume={resumeSession}
-                onStart={startSession}
+                onStart={handleStartRequest}
               />
             }
           />
