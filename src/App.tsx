@@ -16,6 +16,7 @@ import { useSoundStore } from './store/soundStore'
 import {
   playCompletionChime,
   playCountdownBeep,
+  playFinalWarningBeep,
   playStartChime,
 } from './utils/audioCues'
 
@@ -26,6 +27,8 @@ function App() {
   const [startCountdownSeconds, setStartCountdownSeconds] = useState<
     number | null
   >(null)
+  const [isDurationOpen, setIsDurationOpen] = useState(false)
+  const [isDistractionMenuOpen, setIsDistractionMenuOpen] = useState(false)
   const status = useFocusStore((state) => state.status)
   const countdownIntervalRef = useRef<number | null>(null)
   const countdownRunRef = useRef(0)
@@ -44,6 +47,7 @@ function App() {
   const pauseSession = useFocusStore((state) => state.pauseSession)
   const resumeSession = useFocusStore((state) => state.resumeSession)
   const resetSession = useFocusStore((state) => state.resetSession)
+  const stopSession = useFocusStore((state) => state.stopSession)
   const tick = useFocusStore((state) => state.tick)
   const recordDistraction = useFocusStore((state) => state.recordDistraction)
   const addCustomReason = useFocusStore((state) => state.addCustomReason)
@@ -55,6 +59,9 @@ function App() {
   )
   const clearHistory = useFocusStore((state) => state.clearHistory)
   const viewDetails = useFocusStore((state) => state.viewDetails)
+  const startAnotherSession = useFocusStore(
+    (state) => state.startAnotherSession,
+  )
   const soundEnabled = useSoundStore((state) => state.soundEnabled)
   const soundVolume = useSoundStore((state) => state.soundVolume)
   const soundEnabledRef = useRef(soundEnabled)
@@ -109,7 +116,7 @@ function App() {
       endWarningSecondRef.current !== remainingSeconds
     ) {
       endWarningSecondRef.current = remainingSeconds
-      playCountdownBeep(soundEnabled, soundVolume)
+      playFinalWarningBeep(soundEnabled, soundVolume)
     }
   }, [remainingSeconds, soundEnabled, soundVolume, status])
 
@@ -117,7 +124,7 @@ function App() {
     if (
       status === 'completed' &&
       previousStatusRef.current === 'running' &&
-      completedSession
+      completedSession?.status === 'completed'
     ) {
       playCompletionChime(soundEnabled, soundVolume)
     }
@@ -204,10 +211,39 @@ function App() {
         : status === 'completed'
           ? 'Complete'
           : 'Ready'
+  const isCompletionVisible = Boolean(completedSession && !isStartCountdownActive)
 
   function handleViewDetails() {
     viewDetails()
     setReviewTab('review')
+  }
+
+  function handleChooseNextSession() {
+    clearStartCountdown()
+    startAnotherSession()
+    setIsDistractionMenuOpen(false)
+    setIsDurationOpen(true)
+  }
+
+  function handleDurationOpenChange(isOpen: boolean) {
+    setIsDurationOpen(isOpen)
+
+    if (isOpen) {
+      setIsDistractionMenuOpen(false)
+    }
+  }
+
+  function handleDistractionMenuOpenChange(isOpen: boolean) {
+    setIsDistractionMenuOpen(isOpen)
+
+    if (isOpen) {
+      setIsDurationOpen(false)
+    }
+  }
+
+  function handleMediaPickerOpen() {
+    setIsDurationOpen(false)
+    setIsDistractionMenuOpen(false)
   }
 
   function handleOpenSession(sessionId: string) {
@@ -237,11 +273,13 @@ function App() {
             activeDistractionLabel={
               activeDistractionEpisode?.reasonLabel ?? null
             }
+            isDurationOpen={isCompletionVisible ? false : isDurationOpen}
+            onDurationOpenChange={handleDurationOpenChange}
             completion={
-              completedSession && !isStartCountdownActive ? (
+              isCompletionVisible && completedSession ? (
                 <SessionComplete
                   session={completedSession}
-                  onStartAnother={handleStartRequest}
+                  onChooseNext={handleChooseNextSession}
                   onViewDetails={handleViewDetails}
                 />
               ) : null
@@ -263,6 +301,7 @@ function App() {
                 recordDistraction(activeDistractionEpisode.reasonLabel)
               }
             }}
+            onMediaPickerOpen={handleMediaPickerOpen}
             onStart={handleStartRequest}
             startCountdownSeconds={startCountdownSeconds}
             status={status}
@@ -274,7 +313,9 @@ function App() {
                 }
                 customReasons={customReasons}
                 disabled={status !== 'running'}
+                isOpen={isCompletionVisible ? false : isDistractionMenuOpen}
                 onAddCustomReason={addCustomReason}
+                onOpenChange={handleDistractionMenuOpenChange}
                 onRecord={recordDistraction}
                 onRemoveCustomReason={removeCustomReason}
               />
@@ -287,6 +328,7 @@ function App() {
                 onReset={handleResetRequest}
                 onResume={resumeSession}
                 onStart={handleStartRequest}
+                onStop={stopSession}
               />
             }
           />

@@ -13,6 +13,13 @@ import {
   getDistractionDurationSeconds,
   getDistractionReasonLabel,
 } from '../utils/reasons'
+import {
+  getActualDurationSeconds,
+  getDistractedSeconds,
+  getNetFocusSeconds,
+  getPlannedDurationSeconds,
+  getReportedFocusPercent,
+} from '../utils/sessionMetrics'
 import { formatTime } from '../utils/time'
 
 interface MonthlyAnalyticsProps {
@@ -30,17 +37,6 @@ function getSessionMonth(session: CompletedSession) {
 function getDaysInMonth(monthValue: string) {
   const [year, month] = monthValue.split('-').map(Number)
   return new Date(year, month, 0).getDate()
-}
-
-function getReportedFocus(totalSeconds: number, distractedSeconds: number) {
-  if (totalSeconds <= 0) {
-    return 100
-  }
-
-  return Math.max(
-    0,
-    Math.min(100, ((totalSeconds - distractedSeconds) / totalSeconds) * 100),
-  )
 }
 
 function formatHoursMinutes(totalSeconds: number) {
@@ -69,30 +65,31 @@ export function MonthlyAnalytics({ sessions }: MonthlyAnalyticsProps) {
     }),
   )
 
-  let totalFocusSeconds = 0
+  let totalActualFocusSeconds = 0
+  let totalNetFocusSeconds = 0
   let totalDistractedSeconds = 0
+  let totalPlannedSeconds = 0
   let totalEpisodes = 0
   let reportedFocusTotal = 0
 
   monthlySessions.forEach((session) => {
-    const sessionDistractedSeconds = session.distractions.reduce(
-      (total, distraction) => total + getDistractionDurationSeconds(distraction),
-      0,
-    )
+    const sessionActualSeconds = getActualDurationSeconds(session)
+    const sessionDistractedSeconds = getDistractedSeconds(session)
+    const sessionNetSeconds = getNetFocusSeconds(session)
+    const sessionPlannedSeconds = getPlannedDurationSeconds(session)
     const completedAt = new Date(session.completedAt)
     const dayIndex = completedAt.getDate() - 1
 
-    totalFocusSeconds += session.totalSeconds
+    totalActualFocusSeconds += sessionActualSeconds
+    totalNetFocusSeconds += sessionNetSeconds
     totalDistractedSeconds += sessionDistractedSeconds
+    totalPlannedSeconds += sessionPlannedSeconds
     totalEpisodes += session.distractions.length
-    reportedFocusTotal += getReportedFocus(
-      session.totalSeconds,
-      sessionDistractedSeconds,
-    )
+    reportedFocusTotal += getReportedFocusPercent(session)
 
     if (dailyFocusSeconds[dayIndex]) {
       dailyFocusSeconds[dayIndex].focusMinutes += Math.round(
-        session.totalSeconds / 60,
+        sessionActualSeconds / 60,
       )
     }
 
@@ -115,6 +112,10 @@ export function MonthlyAnalytics({ sessions }: MonthlyAnalyticsProps) {
     monthlySessions.length === 0
       ? 0
       : Math.round(reportedFocusTotal / monthlySessions.length)
+  const followThroughRatio =
+    totalPlannedSeconds === 0
+      ? 0
+      : Math.round((totalActualFocusSeconds / totalPlannedSeconds) * 100)
   const rankedReasons = Array.from(reasonTotals, ([reason, data]) => ({
     reason,
     count: data.count,
@@ -154,8 +155,12 @@ export function MonthlyAnalytics({ sessions }: MonthlyAnalyticsProps) {
               <span>sessions</span>
             </div>
             <div>
-              <strong>{formatHoursMinutes(totalFocusSeconds)}</strong>
-              <span>focus time</span>
+              <strong>{formatHoursMinutes(totalActualFocusSeconds)}</strong>
+              <span>actual focus time</span>
+            </div>
+            <div>
+              <strong>{formatHoursMinutes(totalNetFocusSeconds)}</strong>
+              <span>net focus time</span>
             </div>
             <div>
               <strong>{formatTime(totalDistractedSeconds)}</strong>
@@ -166,8 +171,8 @@ export function MonthlyAnalytics({ sessions }: MonthlyAnalyticsProps) {
               <span>average reported focus</span>
             </div>
             <div>
-              <strong>{topReason ? topReason.reason : 'None'}</strong>
-              <span>top reason</span>
+              <strong>{followThroughRatio}%</strong>
+              <span>follow-through</span>
             </div>
             <div>
               <strong>{totalEpisodes}</strong>
@@ -176,7 +181,8 @@ export function MonthlyAnalytics({ sessions }: MonthlyAnalyticsProps) {
           </div>
 
           <p className="analytics-note">
-            Average reported focus is based on recorded distraction time.
+            Actual focus time powers the chart and reported focus uses actual
+            time minus recorded distraction time.
           </p>
 
           <div className="analytics-chart">

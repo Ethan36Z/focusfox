@@ -7,7 +7,9 @@ interface DistractionButtonsProps {
   activeReasonLabel: string | null
   customReasons: string[]
   disabled: boolean
+  isOpen: boolean
   onAddCustomReason: (reason: string) => boolean
+  onOpenChange: (isOpen: boolean) => void
   onRecord: (reason: string) => void
   onRemoveCustomReason: (reason: string) => void
 }
@@ -16,12 +18,13 @@ export function DistractionButtons({
   activeReasonLabel,
   customReasons,
   disabled,
+  isOpen,
   onAddCustomReason,
+  onOpenChange,
   onRecord,
   onRemoveCustomReason,
 }: DistractionButtonsProps) {
   const [customReason, setCustomReason] = useState('')
-  const [isOpen, setIsOpen] = useState(false)
   const allReasons = [...DISTRACTION_REASONS, ...customReasons]
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -34,7 +37,7 @@ export function DistractionButtons({
 
   function handleReasonClick(reason: string) {
     onRecord(reason)
-    setIsOpen(false)
+    onOpenChange(false)
   }
 
   return (
@@ -47,7 +50,7 @@ export function DistractionButtons({
         aria-expanded={isOpen}
         aria-label="Open distraction menu"
         className="distraction-menu-toggle"
-        onClick={() => setIsOpen((current) => !current)}
+        onClick={() => onOpenChange(!isOpen)}
         title="Distractions"
         type="button"
       >

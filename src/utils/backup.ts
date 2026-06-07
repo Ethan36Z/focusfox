@@ -26,6 +26,14 @@ function isString(value: unknown): value is string {
   return typeof value === 'string'
 }
 
+function isOptionalNumber(value: unknown) {
+  return value === undefined || typeof value === 'number'
+}
+
+function isOptionalSessionStatus(value: unknown) {
+  return value === undefined || value === 'completed' || value === 'stopped'
+}
+
 function isCompletedSession(value: unknown): value is CompletedSession {
   if (!isRecord(value)) {
     return false
@@ -35,6 +43,11 @@ function isCompletedSession(value: unknown): value is CompletedSession {
     isString(value.id) &&
     typeof value.durationMinutes === 'number' &&
     typeof value.totalSeconds === 'number' &&
+    isOptionalNumber(value.plannedDurationSeconds) &&
+    isOptionalNumber(value.actualDurationSeconds) &&
+    isOptionalNumber(value.distractedSeconds) &&
+    isOptionalNumber(value.netFocusSeconds) &&
+    isOptionalSessionStatus(value.status) &&
     isString(value.startedAt) &&
     isString(value.completedAt) &&
     Array.isArray(value.distractions)

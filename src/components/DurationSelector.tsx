@@ -1,6 +1,7 @@
 import { Volume2, VolumeX } from 'lucide-react'
 import { useFocusStore } from '../store/focusStore'
 import { useSoundStore } from '../store/soundStore'
+import { playTestSound } from '../utils/audioCues'
 
 const PRESET_MINUTES = [25, 45, 60]
 
@@ -28,7 +29,9 @@ export function DurationSelector({
     <section className="panel duration-panel" aria-labelledby="duration-title">
       <div>
         <p className="eyebrow">Session length</p>
-        <h2 id="duration-title">Choose a soft focus window</h2>
+        <h2 className="visually-hidden" id="duration-title">
+          Session settings
+        </h2>
       </div>
 
       <div className="duration-options" aria-label="Focus duration">
@@ -71,6 +74,17 @@ export function DurationSelector({
         )}
         <span>Sound {soundEnabled ? 'On' : 'Off'}</span>
       </button>
+
+      <div className="sound-settings-row">
+        <button
+          className="secondary-button test-sound-button"
+          disabled={!soundEnabled}
+          onClick={() => playTestSound(soundEnabled, soundVolume)}
+          type="button"
+        >
+          Test sound
+        </button>
+      </div>
 
       <label
         className={soundEnabled ? 'sound-volume' : 'sound-volume muted'}

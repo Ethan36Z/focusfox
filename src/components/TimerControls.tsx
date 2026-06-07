@@ -1,4 +1,4 @@
-import { Pause, Play, RotateCcw } from 'lucide-react'
+import { Pause, Play, RotateCcw, Square } from 'lucide-react'
 import type { FocusStatus } from '../types/focus'
 
 interface TimerControlsProps {
@@ -8,6 +8,7 @@ interface TimerControlsProps {
   onReset: () => void
   onResume: () => void
   onStart: () => void
+  onStop: () => void
 }
 
 export function TimerControls({
@@ -17,6 +18,7 @@ export function TimerControls({
   onReset,
   onResume,
   onStart,
+  onStop,
 }: TimerControlsProps) {
   const isRunning = status === 'running'
   const isPaused = status === 'paused'
@@ -65,16 +67,39 @@ export function TimerControls({
         </button>
       ) : null}
 
+      {isRunning || isPaused ? (
+        <button
+          aria-label="Stop and save session"
+          className="secondary-button"
+          onClick={onStop}
+          title="Stop and save session"
+          type="button"
+        >
+          <Square size={17} aria-hidden="true" />
+          <span className="control-label">Stop</span>
+        </button>
+      ) : null}
+
       <button
         className="ghost-button"
         disabled={status === 'idle' && !isStartCountdownActive}
         onClick={onReset}
-        aria-label={resetLabel}
-        title={resetLabel}
+        aria-label={
+          status === 'running' || status === 'paused'
+            ? 'Reset and discard session'
+            : resetLabel
+        }
+        title={
+          status === 'running' || status === 'paused'
+            ? 'Reset and discard session'
+            : resetLabel
+        }
         type="button"
       >
         <RotateCcw size={18} aria-hidden="true" />
-        <span className="control-label">{resetLabel}</span>
+        <span className="control-label">
+          {status === 'running' || status === 'paused' ? 'Discard' : resetLabel}
+        </span>
       </button>
     </div>
   )

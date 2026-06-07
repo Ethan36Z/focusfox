@@ -1,12 +1,3 @@
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts'
 import type { CompletedSession } from '../types/focus'
 import { DISTRACTION_REASONS } from '../types/focus'
 import {
@@ -15,6 +6,9 @@ import {
   getDistractionReasonLabel,
   getDistractionStartSeconds,
 } from '../utils/reasons'
+import {
+  getPlannedDurationSeconds,
+} from '../utils/sessionMetrics'
 import { formatTime } from '../utils/time'
 
 interface SessionStatsProps {
@@ -22,7 +16,10 @@ interface SessionStatsProps {
 }
 
 export function SessionStats({ session }: SessionStatsProps) {
-  const totalSeconds = Math.max(1, session.totalSeconds)
+  const totalSeconds = Math.max(
+    1,
+    session.actualDurationSeconds ?? getPlannedDurationSeconds(session),
+  )
   const normalizedDistractions = session.distractions.map((distraction) => ({
     id: distraction.id,
     reason: getDistractionReasonLabel(distraction),
@@ -49,11 +46,26 @@ export function SessionStats({ session }: SessionStatsProps) {
     })
   })
 
-  const chartData = Array.from(totals, ([reason, data]) => ({
+  const reasonSummaries = Array.from(totals, ([reason, data]) => ({
     reason,
     count: data.count,
     durationSeconds: data.durationSeconds,
   })).filter((item) => item.durationSeconds > 0)
+  reasonSummaries.sort(
+    (a, b) => b.durationSeconds - a.durationSeconds || b.count - a.count,
+  )
+  const distractedSeconds = normalizedDistractions.reduce(
+    (total, distraction) => total + distraction.durationSeconds,
+    0,
+  )
+  const netFocusSeconds = Math.max(0, totalSeconds - distractedSeconds)
+  const reportedFocus = Math.round((netFocusSeconds / totalSeconds) * 100)
+  const focusedPercent = Math.max(
+    0,
+    Math.min(100, (netFocusSeconds / totalSeconds) * 100),
+  )
+  const distractedPercent = Math.max(0, Math.min(100, 100 - focusedPercent))
+  const topReason = reasonSummaries[0]?.reason ?? 'None'
   const timelineDistractions = normalizedDistractions.filter(
     (distraction) => distraction.durationSeconds > 0,
   )
@@ -75,49 +87,68 @@ export function SessionStats({ session }: SessionStatsProps) {
     <section className="panel stats-panel" aria-labelledby="stats-title">
       <div>
         <p className="eyebrow">Details</p>
-        <h2 id="stats-title">Distraction time by reason</h2>
+        <h2 id="stats-title">Session overview</h2>
+        <p className="helper-copy">
+          {session.status === 'stopped' ? 'Stopped' : 'Completed'} session -{' '}
+          {formatTime(totalSeconds)} actual duration
+        </p>
       </div>
 
-      <div className="chart-wrap">
-        {chartData.length === 0 ? (
-          <p className="chart-empty">
-            No distraction episodes recorded for this session. Nice steady block.
+      <div className="session-overview">
+        <div className="overview-metrics" aria-label="Session overview metrics">
+          <span>
+            <strong>{formatTime(totalSeconds)}</strong>
+            actual duration
+          </span>
+          <span>
+            <strong>{formatTime(netFocusSeconds)}</strong>
+            net focus
+          </span>
+          <span>
+            <strong>{formatTime(distractedSeconds)}</strong>
+            distracted
+          </span>
+          <span>
+            <strong>{reportedFocus}%</strong>
+            reported focus
+          </span>
+          <span>
+            <strong>{topReason}</strong>
+            top reason
+          </span>
+        </div>
+
+        <div
+          aria-label={`Focus composition: ${formatTime(
+            netFocusSeconds,
+          )} focused, ${formatTime(distractedSeconds)} distracted.`}
+          className="focus-composition"
+          role="img"
+        >
+          <span
+            className="focus-composition-net"
+            style={{ width: `${focusedPercent}%` }}
+          />
+          <span
+            className="focus-composition-distracted"
+            style={{ width: `${distractedPercent}%` }}
+          />
+        </div>
+
+        {reasonSummaries.length === 0 ? (
+          <p className="overview-empty">
+            No distractions recorded for this session.
           </p>
         ) : (
-          <ResponsiveContainer width="100%" height={260}>
-            <BarChart
-              data={chartData}
-              margin={{ top: 12, right: 12, left: -18, bottom: 0 }}
-            >
-              <CartesianGrid stroke="#d7eee9" strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="reason" tickLine={false} axisLine={false} />
-              <YAxis
-                allowDecimals={false}
-                tickFormatter={(value) => `${value}s`}
-                tickLine={false}
-                axisLine={false}
-              />
-              <Tooltip
-                cursor={{ fill: 'rgba(104, 174, 164, 0.12)' }}
-                formatter={(value, name, item) => {
-                  if (name === 'durationSeconds') {
-                    return [
-                      `${formatTime(Number(value))} across ${item.payload.count} episodes`,
-                      'Distraction time',
-                    ]
-                  }
-
-                  return [value, name]
-                }}
-                contentStyle={{
-                  border: '1px solid #cfe7df',
-                  borderRadius: 14,
-                  boxShadow: '0 14px 34px rgba(69, 104, 96, 0.16)',
-                }}
-              />
-              <Bar dataKey="durationSeconds" fill="#68aea4" radius={[10, 10, 4, 4]} />
-            </BarChart>
-          </ResponsiveContainer>
+          <div className="overview-reason-list" aria-label="Distraction reasons">
+            {reasonSummaries.map((reason) => (
+              <span className="overview-reason-chip" key={reason.reason}>
+                <strong>{reason.reason}</strong>
+                {formatTime(reason.durationSeconds)} - {reason.count}{' '}
+                {reason.count === 1 ? 'episode' : 'episodes'}
+              </span>
+            ))}
+          </div>
         )}
       </div>
 

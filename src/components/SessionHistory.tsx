@@ -1,5 +1,9 @@
 import type { CompletedSession } from '../types/focus'
-import { getDistractionDurationSeconds } from '../utils/reasons'
+import {
+  getActualDurationSeconds,
+  getDistractedSeconds,
+  getReportedFocusPercent,
+} from '../utils/sessionMetrics'
 import { formatDateTime, formatTime } from '../utils/time'
 
 interface SessionHistoryProps {
@@ -7,17 +11,6 @@ interface SessionHistoryProps {
   onOpenSession: (sessionId: string) => void
   selectedSessionId: string | null
   sessions: CompletedSession[]
-}
-
-function getFocusRatio(totalSeconds: number, distractedSeconds: number) {
-  if (totalSeconds <= 0) {
-    return 100
-  }
-
-  return Math.max(
-    0,
-    Math.min(100, ((totalSeconds - distractedSeconds) / totalSeconds) * 100),
-  )
 }
 
 function getFocusRatioClass(focusRatio: number) {
@@ -73,14 +66,10 @@ export function SessionHistory({
       ) : (
         <ul className="history-list">
           {sessions.slice(0, 8).map((session) => {
-            const distractedSeconds = session.distractions.reduce(
-              (total, distraction) =>
-                total + getDistractionDurationSeconds(distraction),
-              0,
-            )
-            const focusRatio = Math.round(
-              getFocusRatio(session.totalSeconds, distractedSeconds),
-            )
+            const actualDurationSeconds = getActualDurationSeconds(session)
+            const distractedSeconds = getDistractedSeconds(session)
+            const focusRatio = Math.round(getReportedFocusPercent(session))
+            const isStopped = session.status === 'stopped'
 
             return (
               <li key={session.id}>
@@ -94,7 +83,10 @@ export function SessionHistory({
                   type="button"
                 >
                   <div className="history-main">
-                    <strong>{session.durationMinutes} min</strong>
+                    <strong>
+                      {formatTime(actualDurationSeconds)}
+                      {isStopped ? ' stopped' : ''}
+                    </strong>
                     <span>{formatDateTime(session.completedAt)}</span>
                   </div>
                   <span className="history-meta">

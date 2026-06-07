@@ -25,7 +25,10 @@ interface FocusPlayerProps {
   controls: ReactNode
   distractions: ReactNode
   duration: ReactNode
+  isDurationOpen: boolean
+  onDurationOpenChange: (isOpen: boolean) => void
   onEndActiveDistraction: () => void
+  onMediaPickerOpen: () => void
   onStart: () => void
   startCountdownSeconds: number | null
   status: FocusStatus
@@ -39,14 +42,16 @@ export function FocusPlayer({
   controls,
   distractions,
   duration,
+  isDurationOpen,
+  onDurationOpenChange,
   onEndActiveDistraction,
+  onMediaPickerOpen,
   onStart,
   startCountdownSeconds,
   status,
   timer,
 }: FocusPlayerProps) {
   const playerRef = useRef<HTMLElement | null>(null)
-  const [isDurationOpen, setIsDurationOpen] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isTimerVisible, setIsTimerVisible] = useState(true)
   const [embedFailure, setEmbedFailure] = useState<{
@@ -111,7 +116,11 @@ export function FocusPlayer({
 
   const handleStartFromSetup = () => {
     onStart()
-    setIsDurationOpen(false)
+    onDurationOpenChange(false)
+  }
+
+  const handleDurationToggle = () => {
+    onDurationOpenChange(!isDurationOpen)
   }
 
   const handleFullscreenToggle = async () => {
@@ -257,7 +266,7 @@ export function FocusPlayer({
               aria-expanded={isDurationOpen}
               aria-label="Choose focus duration"
               className="player-chrome-button"
-              onClick={() => setIsDurationOpen((current) => !current)}
+              onClick={handleDurationToggle}
               type="button"
             >
               <Clock3 size={16} aria-hidden="true" />
@@ -265,6 +274,7 @@ export function FocusPlayer({
             <label
               aria-label="Choose local audio or video file"
               className="player-chrome-button media-picker"
+              onClick={onMediaPickerOpen}
               title="Choose local media"
             >
               <input

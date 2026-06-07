@@ -35,6 +35,7 @@ interface FocusState {
   pauseSession: () => void
   resumeSession: () => void
   resetSession: () => void
+  stopSession: () => void
   tick: () => void
   recordDistraction: (reasonLabel: DistractionReasonLabel) => void
   addCustomReason: (reasonLabel: string) => boolean
@@ -97,6 +98,35 @@ function closeDistractionEpisode(
     durationSeconds:
       safeEndElapsedSeconds - activeEpisode.startElapsedSeconds,
     endedAt,
+  }
+}
+
+function createCompletedSession(
+  state: FocusState,
+  status: CompletedSession['status'],
+  completedAt: string,
+  actualDurationSeconds: number,
+  distractions: DistractionEpisode[],
+): CompletedSession {
+  const plannedDurationSeconds = state.totalSeconds
+  const distractedSeconds = distractions.reduce(
+    (total, distraction) => total + distraction.durationSeconds,
+    0,
+  )
+  const netFocusSeconds = Math.max(0, actualDurationSeconds - distractedSeconds)
+
+  return {
+    id: createId('session'),
+    durationMinutes: Math.round(actualDurationSeconds / 60),
+    totalSeconds: actualDurationSeconds,
+    plannedDurationSeconds,
+    actualDurationSeconds,
+    distractedSeconds,
+    netFocusSeconds,
+    status,
+    startedAt: state.startedAt ?? completedAt,
+    completedAt,
+    distractions,
   }
 }
 
@@ -202,6 +232,51 @@ export const useFocusStore = create<FocusState>((set, get) => ({
     })
   },
 
+  stopSession: () => {
+    const state = get()
+
+    if (state.status !== 'running' && state.status !== 'paused') {
+      return
+    }
+
+    const completedAt = new Date().toISOString()
+    const actualDurationSeconds = getElapsedSeconds(
+      state.totalSeconds,
+      state.remainingSeconds,
+    )
+    const distractions = state.activeDistractionEpisode
+      ? [
+          ...state.distractions,
+          closeDistractionEpisode(
+            state.activeDistractionEpisode,
+            actualDurationSeconds,
+            completedAt,
+          ),
+        ]
+      : state.distractions
+    const completedSession = createCompletedSession(
+      state,
+      'stopped',
+      completedAt,
+      actualDurationSeconds,
+      distractions,
+    )
+    const completedSessions = persistCompletedSession(
+      completedSession,
+      state.completedSessions,
+    )
+
+    set({
+      status: 'completed',
+      remainingSeconds: Math.max(0, state.totalSeconds - actualDurationSeconds),
+      distractions,
+      activeDistractionEpisode: null,
+      completedSession,
+      completedSessions,
+      showDetails: false,
+    })
+  },
+
   tick: () => {
     const state = get()
 
@@ -225,14 +300,13 @@ export const useFocusStore = create<FocusState>((set, get) => ({
           ),
         ]
       : state.distractions
-    const completedSession: CompletedSession = {
-      id: createId('session'),
-      durationMinutes: Math.round(state.totalSeconds / 60),
-      totalSeconds: state.totalSeconds,
-      startedAt: state.startedAt ?? completedAt,
+    const completedSession = createCompletedSession(
+      state,
+      'completed',
       completedAt,
+      state.totalSeconds,
       distractions,
-    }
+    )
     const completedSessions = persistCompletedSession(
       completedSession,
       state.completedSessions,

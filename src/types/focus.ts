@@ -1,4 +1,5 @@
 export type FocusStatus = 'idle' | 'running' | 'paused' | 'completed'
+export type SessionOutcomeStatus = 'completed' | 'stopped'
 
 export type DistractionReason =
   | 'Phone'
@@ -31,6 +32,11 @@ export interface CompletedSession {
   id: string
   durationMinutes: number
   totalSeconds: number
+  plannedDurationSeconds?: number
+  actualDurationSeconds?: number
+  distractedSeconds?: number
+  netFocusSeconds?: number
+  status?: SessionOutcomeStatus
   startedAt: string
   completedAt: string
   distractions: DistractionEpisode[]
