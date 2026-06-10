@@ -1,13 +1,4 @@
 import { useState } from 'react'
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts'
 import type { CompletedSession } from '../types/focus'
 import {
   getDistractionDurationSeconds,
@@ -51,46 +42,52 @@ function formatHoursMinutes(totalSeconds: number) {
   return `${hours}h ${minutes}m`
 }
 
+function formatTooltipTime(totalSeconds: number) {
+  if (totalSeconds < 60) {
+    return `${Math.round(totalSeconds)}s`
+  }
+
+  return formatHoursMinutes(totalSeconds)
+}
+
 export function MonthlyAnalytics({ sessions }: MonthlyAnalyticsProps) {
   const [selectedMonth, setSelectedMonth] = useState(getMonthValue())
   const monthlySessions = sessions.filter(
     (session) => getSessionMonth(session) === selectedMonth,
   )
   const reasonTotals = new Map<string, { count: number; durationSeconds: number }>()
-  const dailyFocusSeconds = Array.from(
+  const dailyTotals = Array.from(
     { length: getDaysInMonth(selectedMonth) },
     (_, index) => ({
       day: String(index + 1),
-      focusMinutes: 0,
+      distractedSeconds: 0,
+      focusSeconds: 0,
+      sessionSeconds: 0,
     }),
   )
 
-  let totalActualFocusSeconds = 0
-  let totalNetFocusSeconds = 0
-  let totalDistractedSeconds = 0
+  let totalSessionSeconds = 0
+  let totalFocusSeconds = 0
   let totalPlannedSeconds = 0
-  let totalEpisodes = 0
   let reportedFocusTotal = 0
 
   monthlySessions.forEach((session) => {
-    const sessionActualSeconds = getActualDurationSeconds(session)
+    const sessionSeconds = getActualDurationSeconds(session)
     const sessionDistractedSeconds = getDistractedSeconds(session)
-    const sessionNetSeconds = getNetFocusSeconds(session)
+    const sessionFocusSeconds = getNetFocusSeconds(session)
     const sessionPlannedSeconds = getPlannedDurationSeconds(session)
     const completedAt = new Date(session.completedAt)
     const dayIndex = completedAt.getDate() - 1
 
-    totalActualFocusSeconds += sessionActualSeconds
-    totalNetFocusSeconds += sessionNetSeconds
-    totalDistractedSeconds += sessionDistractedSeconds
+    totalSessionSeconds += sessionSeconds
+    totalFocusSeconds += sessionFocusSeconds
     totalPlannedSeconds += sessionPlannedSeconds
-    totalEpisodes += session.distractions.length
     reportedFocusTotal += getReportedFocusPercent(session)
 
-    if (dailyFocusSeconds[dayIndex]) {
-      dailyFocusSeconds[dayIndex].focusMinutes += Math.round(
-        sessionActualSeconds / 60,
-      )
+    if (dailyTotals[dayIndex]) {
+      dailyTotals[dayIndex].sessionSeconds += sessionSeconds
+      dailyTotals[dayIndex].focusSeconds += sessionFocusSeconds
+      dailyTotals[dayIndex].distractedSeconds += sessionDistractedSeconds
     }
 
     session.distractions.forEach((distraction) => {
@@ -115,7 +112,7 @@ export function MonthlyAnalytics({ sessions }: MonthlyAnalyticsProps) {
   const followThroughRatio =
     totalPlannedSeconds === 0
       ? 0
-      : Math.round((totalActualFocusSeconds / totalPlannedSeconds) * 100)
+      : Math.round((totalSessionSeconds / totalPlannedSeconds) * 100)
   const rankedReasons = Array.from(reasonTotals, ([reason, data]) => ({
     reason,
     count: data.count,
@@ -123,6 +120,10 @@ export function MonthlyAnalytics({ sessions }: MonthlyAnalyticsProps) {
   })).sort((a, b) => b.durationSeconds - a.durationSeconds || b.count - a.count)
   const topReason = rankedReasons[0]
   const topReasonSeconds = Math.max(1, topReason?.durationSeconds ?? 0)
+  const maxDailySessionSeconds = Math.max(
+    1,
+    ...dailyTotals.map((day) => day.sessionSeconds),
+  )
 
   return (
     <section className="panel analytics-panel" aria-labelledby="analytics-title">
@@ -155,63 +156,77 @@ export function MonthlyAnalytics({ sessions }: MonthlyAnalyticsProps) {
               <span>sessions</span>
             </div>
             <div>
-              <strong>{formatHoursMinutes(totalActualFocusSeconds)}</strong>
-              <span>actual focus time</span>
+              <strong>{formatHoursMinutes(totalSessionSeconds)}</strong>
+              <span>session time</span>
             </div>
             <div>
-              <strong>{formatHoursMinutes(totalNetFocusSeconds)}</strong>
-              <span>net focus time</span>
-            </div>
-            <div>
-              <strong>{formatTime(totalDistractedSeconds)}</strong>
-              <span>distracted time</span>
+              <strong>{formatHoursMinutes(totalFocusSeconds)}</strong>
+              <span>focus time</span>
             </div>
             <div title="Based on recorded distraction time.">
               <strong>{averageReportedFocus}%</strong>
               <span>average reported focus</span>
             </div>
-            <div>
-              <strong>{followThroughRatio}%</strong>
-              <span>follow-through</span>
-            </div>
-            <div>
-              <strong>{totalEpisodes}</strong>
-              <span>episodes</span>
-            </div>
           </div>
 
           <p className="analytics-note">
-            Actual focus time powers the chart and reported focus uses actual
-            time minus recorded distraction time.
+            Focus time is session time minus recorded distractions. Follow-through
+            this month is {followThroughRatio}% of planned time.
           </p>
 
-          <div className="analytics-chart">
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart
-                data={dailyFocusSeconds}
-                margin={{ top: 12, right: 12, left: -18, bottom: 0 }}
-              >
-                <CartesianGrid stroke="#d7eee9" strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="day" tickLine={false} axisLine={false} />
-                <YAxis
-                  allowDecimals={false}
-                  tickFormatter={(value) => `${value}m`}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <Tooltip
-                  cursor={{ fill: 'rgba(104, 174, 164, 0.12)' }}
-                  formatter={(value) => [`${value} minutes`, 'Focus time']}
-                  labelFormatter={(label) => `Day ${label}`}
-                  contentStyle={{
-                    border: '1px solid #cfe7df',
-                    borderRadius: 14,
-                    boxShadow: '0 14px 34px rgba(69, 104, 96, 0.16)',
-                  }}
-                />
-                <Bar dataKey="focusMinutes" fill="#8bbfd6" radius={[8, 8, 3, 3]} />
-              </BarChart>
-            </ResponsiveContainer>
+          <div className="analytics-chart" aria-label="Daily session and focus time">
+            <div className="analytics-chart-legend" aria-hidden="true">
+              <span className="legend-session">Session time</span>
+              <span className="legend-focus">Focus time</span>
+            </div>
+            <div className="daily-bars">
+              {dailyTotals.map((day) => {
+                const hasSession = day.sessionSeconds > 0
+                const sessionHeight = hasSession
+                  ? Math.max(10, (day.sessionSeconds / maxDailySessionSeconds) * 100)
+                  : 0
+                const focusHeight =
+                  day.focusSeconds > 0
+                    ? Math.max(6, (day.focusSeconds / day.sessionSeconds) * 100)
+                    : 0
+                const reportedFocus = hasSession
+                  ? Math.round((day.focusSeconds / day.sessionSeconds) * 100)
+                  : 0
+
+                return (
+                  <div
+                    className="daily-bar-item"
+                    key={day.day}
+                    tabIndex={hasSession ? 0 : -1}
+                  >
+                    <div className="daily-bar-track">
+                      <span
+                        aria-hidden="true"
+                        className="daily-bar-session"
+                        style={{ height: `${sessionHeight}%` }}
+                      >
+                        <span
+                          className="daily-bar-focus"
+                          style={{ height: `${focusHeight}%` }}
+                        />
+                      </span>
+                    </div>
+                    <span className="daily-bar-label">{day.day}</span>
+                    {hasSession && (
+                      <div className="daily-bar-tooltip" role="tooltip">
+                        <strong>Day {day.day}</strong>
+                        <span>Session time: {formatTooltipTime(day.sessionSeconds)}</span>
+                        <span>Focus time: {formatTooltipTime(day.focusSeconds)}</span>
+                        <span>
+                          Distracted time: {formatTooltipTime(day.distractedSeconds)}
+                        </span>
+                        <span>Reported focus: {reportedFocus}%</span>
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
           </div>
 
           <div className="reason-summary">
