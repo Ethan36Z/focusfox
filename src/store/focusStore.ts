@@ -23,6 +23,7 @@ interface FocusState {
   totalSeconds: number
   remainingSeconds: number
   startedAt: string | null
+  lastTickAtMs: number | null
   distractions: DistractionEpisode[]
   activeDistractionEpisode: ActiveDistractionEpisode | null
   completedSession: CompletedSession | null
@@ -148,6 +149,7 @@ export const useFocusStore = create<FocusState>((set, get) => ({
   totalSeconds: minutesToSeconds(DEFAULT_MINUTES),
   remainingSeconds: minutesToSeconds(DEFAULT_MINUTES),
   startedAt: null,
+  lastTickAtMs: null,
   distractions: [],
   activeDistractionEpisode: null,
   completedSession: null,
@@ -167,6 +169,7 @@ export const useFocusStore = create<FocusState>((set, get) => ({
       distractions: [],
       activeDistractionEpisode: null,
       startedAt: null,
+      lastTickAtMs: null,
       completedSession: null,
       showDetails: false,
     })
@@ -185,6 +188,7 @@ export const useFocusStore = create<FocusState>((set, get) => ({
       distractions: [],
       activeDistractionEpisode: null,
       startedAt: null,
+      lastTickAtMs: null,
       completedSession: null,
       showDetails: false,
     })
@@ -198,6 +202,7 @@ export const useFocusStore = create<FocusState>((set, get) => ({
       totalSeconds,
       remainingSeconds: totalSeconds,
       startedAt: new Date().toISOString(),
+      lastTickAtMs: Date.now(),
       distractions: [],
       activeDistractionEpisode: null,
       completedSession: null,
@@ -206,14 +211,20 @@ export const useFocusStore = create<FocusState>((set, get) => ({
   },
 
   pauseSession: () => {
+    if (get().status !== 'running') {
+      return
+    }
+
+    get().tick()
+
     if (get().status === 'running') {
-      set({ status: 'paused' })
+      set({ status: 'paused', lastTickAtMs: null })
     }
   },
 
   resumeSession: () => {
     if (get().status === 'paused') {
-      set({ status: 'running' })
+      set({ status: 'running', lastTickAtMs: Date.now() })
     }
   },
 
@@ -225,6 +236,7 @@ export const useFocusStore = create<FocusState>((set, get) => ({
       totalSeconds,
       remainingSeconds: totalSeconds,
       startedAt: null,
+      lastTickAtMs: null,
       distractions: [],
       activeDistractionEpisode: null,
       completedSession: null,
@@ -233,6 +245,10 @@ export const useFocusStore = create<FocusState>((set, get) => ({
   },
 
   stopSession: () => {
+    if (get().status === 'running') {
+      get().tick()
+    }
+
     const state = get()
 
     if (state.status !== 'running' && state.status !== 'paused') {
@@ -269,6 +285,7 @@ export const useFocusStore = create<FocusState>((set, get) => ({
     set({
       status: 'completed',
       remainingSeconds: Math.max(0, state.totalSeconds - actualDurationSeconds),
+      lastTickAtMs: null,
       distractions,
       activeDistractionEpisode: null,
       completedSession,
@@ -284,12 +301,35 @@ export const useFocusStore = create<FocusState>((set, get) => ({
       return
     }
 
-    if (state.remainingSeconds > 1) {
-      set({ remainingSeconds: state.remainingSeconds - 1 })
+    const now = Date.now()
+
+    if (state.lastTickAtMs === null) {
+      set({ lastTickAtMs: now })
       return
     }
 
-    const completedAt = new Date().toISOString()
+    const elapsedSeconds = Math.max(
+      0,
+      Math.floor((now - state.lastTickAtMs) / 1000),
+    )
+
+    if (elapsedSeconds < 1) {
+      return
+    }
+
+    const nextLastTickAtMs = state.lastTickAtMs + elapsedSeconds * 1000
+
+    if (state.remainingSeconds > elapsedSeconds) {
+      set({
+        remainingSeconds: state.remainingSeconds - elapsedSeconds,
+        lastTickAtMs: nextLastTickAtMs,
+      })
+      return
+    }
+
+    const completedAt = new Date(
+      state.lastTickAtMs + state.remainingSeconds * 1000,
+    ).toISOString()
     const distractions = state.activeDistractionEpisode
       ? [
           ...state.distractions,
@@ -315,6 +355,7 @@ export const useFocusStore = create<FocusState>((set, get) => ({
     set({
       status: 'completed',
       remainingSeconds: 0,
+      lastTickAtMs: null,
       distractions,
       activeDistractionEpisode: null,
       completedSession,
@@ -324,6 +365,10 @@ export const useFocusStore = create<FocusState>((set, get) => ({
   },
 
   recordDistraction: (reasonLabel) => {
+    if (get().status === 'running') {
+      get().tick()
+    }
+
     const state = get()
 
     if (state.status !== 'running') {
@@ -406,6 +451,7 @@ export const useFocusStore = create<FocusState>((set, get) => ({
         distractions: completedSession.distractions,
         activeDistractionEpisode: null,
         startedAt: completedSession.startedAt,
+        lastTickAtMs: null,
       })
     }
   },
@@ -429,6 +475,7 @@ export const useFocusStore = create<FocusState>((set, get) => ({
       totalSeconds,
       remainingSeconds: totalSeconds,
       startedAt: null,
+      lastTickAtMs: null,
       distractions: [],
       activeDistractionEpisode: null,
       completedSession: null,
@@ -456,6 +503,7 @@ export const useFocusStore = create<FocusState>((set, get) => ({
       totalSeconds: minutesToSeconds(get().selectedMinutes),
       remainingSeconds: minutesToSeconds(get().selectedMinutes),
       startedAt: null,
+      lastTickAtMs: null,
       distractions: [],
       activeDistractionEpisode: null,
       completedSession: null,
